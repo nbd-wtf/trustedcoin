@@ -132,8 +132,6 @@ func main() {
 						return nil, 21, err
 					}
 
-					p.Logf("sent raw transaction: %s", hex)
-
 					return srtresp, 0, nil
 				},
 			}, {
