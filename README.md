@@ -37,4 +37,4 @@ cd
 lightningd
 ```
 
-## Built with [![GoDoc](https://godoc.org/github.com/fiatjaf/lightningd-gjson-rpc?status.svg)](https://godoc.org/github.com/fiatjaf/lightningd-gjson-rpc)
+## Built with [github.com/fiatjaf/lightningd-gjson-rpc](https://pkg.go.dev/github.com/fiatjaf/lightningd-gjson-rpc/plugin?tab=doc)
