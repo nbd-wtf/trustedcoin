@@ -37,4 +37,30 @@ cd
 lightningd
 ```
 
-## Built with [github.com/fiatjaf/lightningd-gjson-rpc](https://pkg.go.dev/github.com/fiatjaf/lightningd-gjson-rpc/plugin?tab=doc)
+## How to build
+
+1. Install `gox` 
+
+```
+go get -v github.com/mitchellh/gox
+```
+
+2. Ensure `gox` is visible, i.e. presents in your `$PATH`. Assuming that you have set up `$GOPATH`, your `PATH` has to have additional location `$GOPATH/bin`.
+
+3. Run `make` inside `trustedcoin` directory. The `gox` should log build process as it shown below.
+
+```
+-->       linux/386: github.com/fiatjaf/trustedcoin
+-->       linux/arm: github.com/fiatjaf/trustedcoin
+-->     linux/amd64: github.com/fiatjaf/trustedcoin
+-->   freebsd/amd64: github.com/fiatjaf/trustedcoin
+-->    darwin/amd64: github.com/fiatjaf/trustedcoin
+```
+
+4. Ensure `lightningd-gjson-rpc` is built
+
+```
+go get -v github.com/fiatjaf/lightningd-gjson-rpc
+```
+
+[Project lightningd-gjson-rpc](https://pkg.go.dev/github.com/fiatjaf/lightningd-gjson-rpc/plugin?tab=doc)
