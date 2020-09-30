@@ -57,10 +57,10 @@ go get -v github.com/mitchellh/gox
 -->    darwin/amd64: github.com/fiatjaf/trustedcoin
 ```
 
-4. Build `lightningd-gjson-rpc`
+4. Ensure `lightningd-gjson-rpc` is built
 
 ```
 go get -v github.com/fiatjaf/lightningd-gjson-rpc
 ```
 
-[Project page](https://pkg.go.dev/github.com/fiatjaf/lightningd-gjson-rpc/plugin?tab=doc)
+[Project lightningd-gjson-rpc](https://pkg.go.dev/github.com/fiatjaf/lightningd-gjson-rpc/plugin?tab=doc)
