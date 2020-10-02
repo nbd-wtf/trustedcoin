@@ -9,19 +9,26 @@ import (
 )
 
 var (
-	esplora = []string{
-		"https://mempool.space/api",
-		"https://blockstream.info/api",
-		"https://mempool.emzy.de/api",
+	network string
+	esplora = map[string][]string{
+		"main": []string{
+			"https://mempool.space/api",
+			"https://blockstream.info/api",
+			"https://mempool.emzy.de/api",
+		},
+		"test": []string{
+			"https://mempool.space/testnet/api",
+			"https://blockstream.info/testnet/api",
+		},
 	}
 )
 
-func esploras() (ss []string) {
-	n := len(esplora)
+func esploras(network string) (ss []string) {
+	n := len(esplora[network])
 	index := rand.Intn(10)
 	ss = make([]string, n)
 	for i := 0; i < n; i++ {
-		ss[i] = esplora[index%n]
+		ss[i] = esplora[network][index%n]
 	}
 	return ss
 }
@@ -30,6 +37,9 @@ func main() {
 	p := plugin.Plugin{
 		Name:    "trustedcoin",
 		Version: "v0.2.5",
+		Options: []plugin.Option{
+			{"trustedcoin-network", "string", nil, "type of the network testnet or bitcoin"},
+		},
 		RPCMethods: []plugin.RPCMethod{
 			{
 				"getrawblockbyheight",
@@ -79,7 +89,7 @@ func main() {
 						HeaderCount int64  `json:"headercount"`
 						BlockCount  int64  `json:"blockcount"`
 						IBD         bool   `json:"ibd"`
-					}{"main", tip, tip, false}, 0, nil
+					}{network, tip, tip, false}, 0, nil
 				},
 			}, {
 				"estimatefees",
@@ -153,6 +163,13 @@ func main() {
 					return UTXOResponse{&output.Value, &output.ScriptPubKey}, 0, nil
 				},
 			},
+		},
+		OnInit: func(p *plugin.Plugin) {
+			// read config -- cant get from node on plugin initialization step
+			network, _ = p.Args.String("trustedcoin-network")
+			if network != "" {
+				p.Log("network type: " + network)
+			}
 		},
 	}
 

@@ -72,7 +72,7 @@ func getBlock(height int64) (block, hash string, err error) {
 }
 
 func getHash(height int64) (hash string, err error) {
-	for _, endpoint := range esploras() {
+	for _, endpoint := range esploras(network) {
 		w, errW := http.Get(fmt.Sprintf(endpoint+"/block-height/%d", height))
 		if errW != nil {
 			err = errW
@@ -122,7 +122,13 @@ func blockFromBlockchainInfo(hash string) (string, error) {
 }
 
 func blockFromBlockchair(hash string) (string, error) {
-	w, err := http.Get("https://api.blockchair.com/bitcoin/raw/block/" + hash)
+	var url string
+	if network == "main" {
+		url = "https://api.blockchair.com/bitcoin/raw/block/"
+	} else {
+		url = "https://api.blockchair.com/bitcoin/testnet/raw/block/"
+	}
+	w, err := http.Get(url + hash)
 	if err != nil {
 		return "", fmt.Errorf("failed to get raw block %s from blockchair.com: %s", hash, err.Error())
 	}

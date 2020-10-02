@@ -18,7 +18,7 @@ type EstimatedFees struct {
 }
 
 func getFeeRatesFromEsplora() (feerates map[string]float64, err error) {
-	for _, endpoint := range esploras() {
+	for _, endpoint := range esploras(network) {
 		w, errW := http.Get(endpoint + "/fee-estimates")
 		if errW != nil {
 			err = errW

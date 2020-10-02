@@ -7,7 +7,7 @@ import (
 )
 
 func getTip() (tip int64, err error) {
-	for _, endpoint := range esploras() {
+	for _, endpoint := range esploras(network) {
 		w, errW := http.Get(endpoint + "/blocks/tip/height")
 		if errW != nil {
 			err = errW
