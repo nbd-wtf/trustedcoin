@@ -169,6 +169,9 @@ func main() {
 			network, _ = p.Args.String("trustedcoin-network")
 			if network != "" {
 				p.Log("network type: " + network)
+			} else {
+				network = "main"
+				p.Log("default network type: " + network)
 			}
 		},
 	}

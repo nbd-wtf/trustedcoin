@@ -20,6 +20,14 @@ Then add the following line to your `~/.lightning/config` file:
 disable-plugin=bcli
 ```
 
+and 
+
+```
+trustedcoin-network=main
+```
+
+or `test` depends on the type of the network you want `trustedcoin` be running.
+
 This disables the default Bitcoin backend plugin so `trustedcoin` can take its place.
 
 ### Extra: how to bootstrap a Lightning node from scratch, without Bitcoin Core, on Ubuntu amd64
