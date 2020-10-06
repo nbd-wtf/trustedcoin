@@ -38,7 +38,7 @@ func main() {
 		Name:    "trustedcoin",
 		Version: "v0.2.5",
 		Options: []plugin.Option{
-			{"trustedcoin-network", "string", nil, "type of the network testnet or bitcoin"},
+			{"trustedcoin-network", "string", "main", "type of the network testnet or bitcoin"},
 		},
 		RPCMethods: []plugin.RPCMethod{
 			{
@@ -167,12 +167,7 @@ func main() {
 		OnInit: func(p *plugin.Plugin) {
 			// read config -- cant get from node on plugin initialization step
 			network, _ = p.Args.String("trustedcoin-network")
-			if network != "" {
-				p.Log("network type: " + network)
-			} else {
-				network = "main"
-				p.Log("default network type: " + network)
-			}
+			p.Log("network type: " + network)
 		},
 	}
 
