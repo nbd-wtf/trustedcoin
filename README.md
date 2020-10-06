@@ -31,7 +31,7 @@ apt install lightningd
 mkdir -p ~/.lightning/plugins
 echo 'disable-plugin=bcli' >> .lightning/config
 cd ~/.lightning/plugins
-wget https://github.com/fiatjaf/lightningd-gjson-rpc/releases/download/trustedcoin-v0.2.4/trustedcoin_linux_amd64
+wget https://github.com/fiatjaf/trustedcoin/releases/download/v0.2.5/trustedcoin_linux_amd64
 chmod +x trustedcoin_linux_amd64
 cd
 lightningd
