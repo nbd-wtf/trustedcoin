@@ -24,10 +24,18 @@ func getBlock(height int64) (block, hash string, err error) {
 		return
 	}
 
-	for _, try := range []func(string) (string, error){
+	api_range := []func(string) (string, error){
 		blockFromBlockchainInfo,
 		blockFromBlockchair,
-	} {
+	}
+
+	if network == "test" {
+		api_range = []func(string) (string, error){
+			blockFromBlockchair,
+		}
+	}
+
+	for _, try := range api_range {
 		blockhex, errW := try(hash)
 		if errW != nil || blockhex == "" {
 			err = errW
