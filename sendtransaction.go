@@ -12,7 +12,7 @@ type RawTransactionResponse struct {
 }
 
 func sendRawTransaction(tx io.Reader) (resp RawTransactionResponse, err error) {
-	for _, endpoint := range esploras() {
+	for _, endpoint := range esploras(network) {
 		w, errW := http.Post(endpoint+"/tx", "text/plain", tx)
 		if errW != nil {
 			err = errW

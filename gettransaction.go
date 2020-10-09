@@ -10,14 +10,16 @@ type UTXOResponse struct {
 	Script *string `json:"script"`
 }
 
-func getTransaction(txid string) (tx struct {
+type TxResponse struct {
 	TXID string `json:"txid"`
 	Vout []struct {
 		ScriptPubKey string `json:"scriptPubKey"`
 		Value        int64  `json:"value"`
 	} `json:"vout"`
-}, err error) {
-	for _, endpoint := range esploras() {
+}
+
+func getTransaction(txid string) (tx TxResponse, err error) {
+	for _, endpoint := range esploras(network) {
 		w, errW := http.Get(endpoint + "/tx/" + txid)
 		if errW != nil {
 			err = errW
