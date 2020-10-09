@@ -114,9 +114,6 @@ func getHash(height int64) (hash string, err error) {
 }
 
 func blockFromBlockchainInfo(hash string) (string, error) {
-	if network != "main" {
-		return "", fmt.Errorf("%s is not available for blockchain.info", network)
-	}
 	w, err := http.Get(fmt.Sprintf("https://blockchain.info/block/%s?format=hex", hash))
 	if err != nil {
 		return "", fmt.Errorf("failed to get raw block %s from blockchain.info: %s", hash, err.Error())
