@@ -20,11 +20,12 @@ type EstimatedFees struct {
 func getFeeRatesFromEsplora() (feerates map[string]float64, err error) {
 	for _, endpoint := range esploras(network) {
 		w, errW := http.Get(endpoint + "/fee-estimates")
+		defer w.Body.Close()
+
 		if errW != nil {
 			err = errW
 			continue
 		}
-		defer w.Body.Close()
 
 		if w.StatusCode >= 300 {
 			err = errors.New(endpoint + " error: " + w.Status)
