@@ -36,7 +36,7 @@ func esploras(network string) (ss []string) {
 func main() {
 	p := plugin.Plugin{
 		Name:    "trustedcoin",
-		Version: "v0.2.5",
+		Version: "v0.3.0",
 		Options: []plugin.Option{
 			{"trustedcoin-network", "string", "main", "type of the network testnet or bitcoin"},
 		},
