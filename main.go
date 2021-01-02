@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"fmt"
 	"math/rand"
+	"os"
 
 	"github.com/fiatjaf/lightningd-gjson-rpc/plugin"
 )
@@ -19,6 +20,10 @@ var (
 		"test": []string{
 			"https://mempool.space/testnet/api",
 			"https://blockstream.info/testnet/api",
+		},
+		"liquidv1": []string{
+			"https://mempool.space/liquid/api",
+			"https://blockstream.info/liquid/api",
 		},
 	}
 )
@@ -38,7 +43,7 @@ func main() {
 		Name:    "trustedcoin",
 		Version: "v0.3.0",
 		Options: []plugin.Option{
-			{"trustedcoin-network", "string", "main", "type of the network testnet or bitcoin"},
+			{"trustedcoin-network", "string", "main", "type of the network: 'main' for mainnet, 'test' for testnet3, 'liquidv1' for liquid."},
 		},
 		RPCMethods: []plugin.RPCMethod{
 			{
@@ -168,6 +173,13 @@ func main() {
 			// read config -- cant get from node on plugin initialization step
 			network, _ = p.Args.String("trustedcoin-network")
 			p.Log("network type: " + network)
+			switch network {
+			case "main", "test", "liquidv1":
+			default:
+				p.Logf("'trustedcoin-network' is set to '%s', which is invalid.",
+					network)
+				os.Exit(1)
+			}
 		},
 	}
 

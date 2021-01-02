@@ -24,56 +24,54 @@ func getBlock(height int64) (block, hash string, err error) {
 		return
 	}
 
-	api_range := []func(string) (string, error){
-		blockFromBlockchainInfo,
-		blockFromBlockchair,
+	var blockFetchFunctions []func(string) ([]byte, error)
+	switch network {
+	case "main":
+		blockFetchFunctions = append(blockFetchFunctions, blockFromBlockchainInfo)
+		blockFetchFunctions = append(blockFetchFunctions, blockFromBlockchair)
+		blockFetchFunctions = append(blockFetchFunctions, blockFromEsplora)
+	case "test":
+		blockFetchFunctions = append(blockFetchFunctions, blockFromEsplora)
+		blockFetchFunctions = append(blockFetchFunctions, blockFromBlockchair)
+	case "liquidv1":
+		blockFetchFunctions = append(blockFetchFunctions, blockFromEsplora)
 	}
 
-	if network == "test" {
-		api_range = []func(string) (string, error){
-			blockFromBlockchair,
-		}
-	}
-
-	for _, try := range api_range {
-		blockhex, errW := try(hash)
-		if errW != nil || blockhex == "" {
+	for _, try := range blockFetchFunctions {
+		block, errW := try(hash)
+		if errW != nil || block == nil {
 			err = errW
 			continue
 		}
 
-		// verify and hash
-		blockbytes, errW := hex.DecodeString(blockhex)
-		if errW != nil {
-			err = errW
-			continue
-		}
-
-		blockparsed, errW := btcutil.NewBlockFromBytes(blockbytes)
-		if errW != nil {
-			err = errW
-			continue
-		}
-		header := blockparsed.MsgBlock().Header
-
-		blockhash := hex.EncodeToString(reverseHash(blockparsed.Hash()))
-		if blockhash != hash {
-			err = fmt.Errorf("fetched block hash %s doesn't match expected %s",
-				blockhash, hash)
-			continue
-		}
-
-		prevHash := hex.EncodeToString(header.PrevBlock[:])
-		if cachedPrevHash, ok := heightCache[height-1]; ok {
-			if prevHash != cachedPrevHash {
-				// something is badly wrong with this block
-				err = fmt.Errorf("block %d (%s): prev block hash %d (%s) doesn't match what we know from previous block %d (%s)", height, blockhash, height-1, prevHash, height-1, cachedPrevHash)
+		// verify and hash, but only on mainnet, the others we trust even more blindly
+		if network == "main" {
+			blockparsed, errW := btcutil.NewBlockFromBytes(block)
+			if errW != nil {
+				err = errW
 				continue
+			}
+			header := blockparsed.MsgBlock().Header
+
+			blockhash := hex.EncodeToString(reverseHash(blockparsed.Hash()))
+			if blockhash != hash {
+				err = fmt.Errorf("fetched block hash %s doesn't match expected %s",
+					blockhash, hash)
+				continue
+			}
+
+			prevHash := hex.EncodeToString(header.PrevBlock[:])
+			if cachedPrevHash, ok := heightCache[height-1]; ok {
+				if prevHash != cachedPrevHash {
+					// something is badly wrong with this block
+					err = fmt.Errorf("block %d (%s): prev block hash %d (%s) doesn't match what we know from previous block %d (%s)", height, blockhash, height-1, prevHash, height-1, cachedPrevHash)
+					continue
+				}
 			}
 		}
 
 		delete(heightCache, height)
-		return blockhex, hash, nil
+		return hex.EncodeToString(block), hash, nil
 	}
 
 	return
@@ -113,23 +111,36 @@ func getHash(height int64) (hash string, err error) {
 	return "", err
 }
 
-func blockFromBlockchainInfo(hash string) (string, error) {
+func reverseHash(hash *chainhash.Hash) []byte {
+	r := make([]byte, chainhash.HashSize)
+	for i, b := range hash {
+		r[chainhash.HashSize-i-1] = b
+	}
+	return r
+}
+
+func blockFromBlockchainInfo(hash string) ([]byte, error) {
 	w, err := http.Get(fmt.Sprintf("https://blockchain.info/block/%s?format=hex", hash))
 	if err != nil {
-		return "", fmt.Errorf("failed to get raw block %s from blockchain.info: %s", hash, err.Error())
+		return nil, fmt.Errorf("failed to get raw block %s from blockchain.info: %s", hash, err.Error())
 	}
 	defer w.Body.Close()
 
 	block, _ := ioutil.ReadAll(w.Body)
 	if len(block) < 100 {
 		// block not available here yet
-		return "", nil
+		return nil, nil
 	}
 
-	return string(block), nil
+	blockbytes, err := hex.DecodeString(string(block))
+	if err != nil {
+		return nil, fmt.Errorf("block from blockchain.info is invalid hex: %w", err)
+	}
+
+	return blockbytes, nil
 }
 
-func blockFromBlockchair(hash string) (string, error) {
+func blockFromBlockchair(hash string) ([]byte, error) {
 	var url string
 	if network == "main" {
 		url = "https://api.blockchair.com/bitcoin/raw/block/"
@@ -138,7 +149,8 @@ func blockFromBlockchair(hash string) (string, error) {
 	}
 	w, err := http.Get(url + hash)
 	if err != nil {
-		return "", fmt.Errorf("failed to get raw block %s from blockchair.com: %s", hash, err.Error())
+		return nil, fmt.Errorf(
+			"failed to get raw block %s from blockchair.com: %s", hash, err.Error())
 	}
 	defer w.Body.Close()
 
@@ -149,21 +161,37 @@ func blockFromBlockchair(hash string) (string, error) {
 	}
 	err = json.NewDecoder(w.Body).Decode(&data)
 	if err != nil {
-		return "", err
+		return nil, err
 	}
 
 	if bdata, ok := data.Data[hash]; ok {
-		return bdata.RawBlock, nil
+		blockbytes, err := hex.DecodeString(bdata.RawBlock)
+		if err != nil {
+			return nil, fmt.Errorf("block from blockchair is invalid hex: %w", err)
+		}
+
+		return blockbytes, nil
 	} else {
 		// block not available here yet
-		return "", nil
+		return nil, nil
 	}
 }
 
-func reverseHash(hash *chainhash.Hash) []byte {
-	r := make([]byte, chainhash.HashSize)
-	for i, b := range hash {
-		r[chainhash.HashSize-i-1] = b
+func blockFromEsplora(hash string) ([]byte, error) {
+	var err error
+	var block []byte
+
+	for _, endpoint := range esploras(network) {
+		w, errW := http.Get(fmt.Sprintf(endpoint+"/block/%s/raw", hash))
+		if errW != nil {
+			err = errW
+			continue
+		}
+
+		defer w.Body.Close()
+		block, _ = ioutil.ReadAll(w.Body)
+		break
 	}
-	return r
+
+	return block, err
 }
