@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"fmt"
 	"math/rand"
-	"os"
 
 	"github.com/fiatjaf/lightningd-gjson-rpc/plugin"
 )
@@ -12,16 +11,16 @@ import (
 var (
 	network string
 	esplora = map[string][]string{
-		"main": []string{
+		"bitcoin": []string{
 			"https://mempool.space/api",
 			"https://blockstream.info/api",
 			"https://mempool.emzy.de/api",
 		},
-		"test": []string{
+		"testnet": []string{
 			"https://mempool.space/testnet/api",
 			"https://blockstream.info/testnet/api",
 		},
-		"liquidv1": []string{
+		"liquid": []string{
 			"https://mempool.space/liquid/api",
 			"https://blockstream.info/liquid/api",
 		},
@@ -41,10 +40,7 @@ func esploras(network string) (ss []string) {
 func main() {
 	p := plugin.Plugin{
 		Name:    "trustedcoin",
-		Version: "v0.3.0",
-		Options: []plugin.Option{
-			{"trustedcoin-network", "string", "main", "type of the network: 'main' for mainnet, 'test' for testnet3, 'liquidv1' for liquid."},
-		},
+		Version: "v0.4.0",
 		RPCMethods: []plugin.RPCMethod{
 			{
 				"getrawblockbyheight",
@@ -89,12 +85,22 @@ func main() {
 
 					p.Logf("tip: %d", tip)
 
+					var bip70network string
+					switch network {
+					case "bitcoin":
+						bip70network = "main"
+					case "testnet":
+						bip70network = "test"
+					case "liquid":
+						bip70network = "liquidv1"
+					}
+
 					return struct {
 						Chain       string `json:"chain"`
 						HeaderCount int64  `json:"headercount"`
 						BlockCount  int64  `json:"blockcount"`
 						IBD         bool   `json:"ibd"`
-					}{network, tip, tip, false}, 0, nil
+					}{bip70network, tip, tip, false}, 0, nil
 				},
 			}, {
 				"estimatefees",
@@ -170,16 +176,7 @@ func main() {
 			},
 		},
 		OnInit: func(p *plugin.Plugin) {
-			// read config -- cant get from node on plugin initialization step
-			network, _ = p.Args.String("trustedcoin-network")
-			p.Log("network type: " + network)
-			switch network {
-			case "main", "test", "liquidv1":
-			default:
-				p.Logf("'trustedcoin-network' is set to '%s', which is invalid.",
-					network)
-				os.Exit(1)
-			}
+			network = p.Network
 		},
 	}
 

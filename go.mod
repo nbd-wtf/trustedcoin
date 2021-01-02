@@ -8,3 +8,5 @@ require (
 	github.com/fiatjaf/lightningd-gjson-rpc v1.1.0
 	github.com/mitchellh/gox v1.0.1 // indirect
 )
+
+replace github.com/fiatjaf/lightningd-gjson-rpc => /home/fiatjaf/comp/lightningd-gjson-rpc

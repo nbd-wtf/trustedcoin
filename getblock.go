@@ -26,14 +26,14 @@ func getBlock(height int64) (block, hash string, err error) {
 
 	var blockFetchFunctions []func(string) ([]byte, error)
 	switch network {
-	case "main":
+	case "bitcoin":
 		blockFetchFunctions = append(blockFetchFunctions, blockFromBlockchainInfo)
 		blockFetchFunctions = append(blockFetchFunctions, blockFromBlockchair)
 		blockFetchFunctions = append(blockFetchFunctions, blockFromEsplora)
-	case "test":
+	case "testnet":
 		blockFetchFunctions = append(blockFetchFunctions, blockFromEsplora)
 		blockFetchFunctions = append(blockFetchFunctions, blockFromBlockchair)
-	case "liquidv1":
+	case "liquid":
 		blockFetchFunctions = append(blockFetchFunctions, blockFromEsplora)
 	}
 
@@ -45,7 +45,7 @@ func getBlock(height int64) (block, hash string, err error) {
 		}
 
 		// verify and hash, but only on mainnet, the others we trust even more blindly
-		if network == "main" {
+		if network == "bitcoin" {
 			blockparsed, errW := btcutil.NewBlockFromBytes(block)
 			if errW != nil {
 				err = errW
@@ -142,10 +142,13 @@ func blockFromBlockchainInfo(hash string) ([]byte, error) {
 
 func blockFromBlockchair(hash string) ([]byte, error) {
 	var url string
-	if network == "main" {
+	switch network {
+	case "bitcoin":
 		url = "https://api.blockchair.com/bitcoin/raw/block/"
-	} else {
+	case "testnet":
 		url = "https://api.blockchair.com/bitcoin/testnet/raw/block/"
+	default:
+		return nil, nil
 	}
 	w, err := http.Get(url + hash)
 	if err != nil {
