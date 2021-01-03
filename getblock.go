@@ -193,6 +193,12 @@ func blockFromEsplora(hash string) ([]byte, error) {
 
 		defer w.Body.Close()
 		block, _ = ioutil.ReadAll(w.Body)
+
+		if len(block) < 200 {
+			// block not available yet
+			return nil, nil
+		}
+
 		break
 	}
 
