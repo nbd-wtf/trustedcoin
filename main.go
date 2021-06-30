@@ -105,7 +105,7 @@ func main() {
 			}, {
 				"estimatefees",
 				"",
-				"Get the Bitcoin feerate in btc/kilo-vbyte.",
+				"Get the Bitcoin feerate in sat/kilo-vbyte.",
 				"",
 				func(p *plugin.Plugin, params plugin.Params) (resp interface{}, errCode int, err error) {
 					// just copy sauron here
