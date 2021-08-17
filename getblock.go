@@ -120,7 +120,7 @@ func reverseHash(hash *chainhash.Hash) []byte {
 }
 
 func blockFromBlockchainInfo(hash string) ([]byte, error) {
-	w, err := http.Get(fmt.Sprintf("https://blockchain.info/block/%s?format=hex", hash))
+	w, err := http.Get(fmt.Sprintf("https://blockchain.info/rawblock/%s?format=hex", hash))
 	if err != nil {
 		return nil, fmt.Errorf("failed to get raw block %s from blockchain.info: %s", hash, err.Error())
 	}
