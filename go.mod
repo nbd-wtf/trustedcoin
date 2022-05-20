@@ -1,6 +1,6 @@
 module github.com/fiatjaf/trustedcoin
 
-go 1.14
+go 1.18
 
 require (
 	github.com/btcsuite/btcd v0.20.1-beta.0.20200515232429-9f0179fd2c46

@@ -11,16 +11,16 @@ import (
 var (
 	network string
 	esplora = map[string][]string{
-		"bitcoin": []string{
+		"bitcoin": {
 			"https://mempool.space/api",
 			"https://blockstream.info/api",
 			"https://mempool.emzy.de/api",
 		},
-		"testnet": []string{
+		"testnet": {
 			"https://mempool.space/testnet/api",
 			"https://blockstream.info/testnet/api",
 		},
-		"liquid": []string{
+		"liquid": {
 			"https://mempool.space/liquid/api",
 			"https://blockstream.info/liquid/api",
 		},
