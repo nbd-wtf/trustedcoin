@@ -7,6 +7,14 @@ import (
 )
 
 func getTip() (tip int64, err error) {
+	// try bitcoind first
+	if bitcoind != nil {
+		if info, err := bitcoind.GetBlockChainInfo(); err == nil {
+			return int64(info.Headers), nil
+		}
+	}
+
+	// then try explorers
 	for _, endpoint := range esploras(network) {
 		w, errW := http.Get(endpoint + "/blocks/tip/height")
 		if errW != nil {

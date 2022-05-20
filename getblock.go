@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bytes"
 	"encoding/hex"
 	"encoding/json"
 	"errors"
@@ -10,6 +11,7 @@ import (
 	"strings"
 
 	"github.com/btcsuite/btcd/chaincfg/chainhash"
+	"github.com/btcsuite/btcd/wire"
 	"github.com/btcsuite/btcutil"
 )
 
@@ -24,6 +26,20 @@ func getBlock(height int64) (block, hash string, err error) {
 		return
 	}
 
+	// try bitcoind first
+	if bitcoind != nil {
+		var decodedChainHash chainhash.Hash
+		if err := chainhash.Decode(&decodedChainHash, hash); err == nil {
+			if block, err := bitcoind.GetBlock(&decodedChainHash); err == nil {
+				raw := &bytes.Buffer{}
+				if err := block.BtcEncode(raw, wire.ProtocolVersion, wire.WitnessEncoding); err == nil {
+					return hex.EncodeToString(raw.Bytes()), hash, nil
+				}
+			}
+		}
+	}
+
+	// then try explorers
 	var blockFetchFunctions []func(string) ([]byte, error)
 	switch network {
 	case "bitcoin":
@@ -33,7 +49,7 @@ func getBlock(height int64) (block, hash string, err error) {
 	case "testnet":
 		blockFetchFunctions = append(blockFetchFunctions, blockFromEsplora)
 		blockFetchFunctions = append(blockFetchFunctions, blockFromBlockchair)
-	case "liquid":
+	case "signet", "liquid":
 		blockFetchFunctions = append(blockFetchFunctions, blockFromEsplora)
 	}
 
@@ -78,6 +94,14 @@ func getBlock(height int64) (block, hash string, err error) {
 }
 
 func getHash(height int64) (hash string, err error) {
+	// try bitcoind first
+	if bitcoind != nil {
+		if hash, err := bitcoind.GetBlockHash(height); err == nil {
+			return hash.String(), nil
+		}
+	}
+
+	// then try explorers
 	for _, endpoint := range esploras(network) {
 		w, errW := http.Get(fmt.Sprintf(endpoint+"/block-height/%d", height))
 		if errW != nil {

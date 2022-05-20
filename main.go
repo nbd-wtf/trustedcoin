@@ -1,10 +1,10 @@
 package main
 
 import (
-	"bytes"
 	"fmt"
 	"math/rand"
 
+	"github.com/btcsuite/btcd/rpcclient"
 	"github.com/fiatjaf/lightningd-gjson-rpc/plugin"
 )
 
@@ -20,11 +20,21 @@ var (
 			"https://mempool.space/testnet/api",
 			"https://blockstream.info/testnet/api",
 		},
+		"signet": {
+			"https://mempool.space/signet/api",
+		},
 		"liquid": {
-			"https://mempool.space/liquid/api",
+			"https://liquid.network/api",
 			"https://blockstream.info/liquid/api",
 		},
 	}
+	defaultBitcoindRPCPorts = map[string]string{
+		"bitcoin": "8332",
+		"testnet": "18332",
+		"signet":  "38332",
+		"regtest": "18443",
+	}
+	bitcoind *rpcclient.Client
 )
 
 func esploras(network string) (ss []string) {
@@ -40,7 +50,13 @@ func esploras(network string) (ss []string) {
 func main() {
 	p := plugin.Plugin{
 		Name:    "trustedcoin",
-		Version: "v0.4.0",
+		Version: "v0.5.0",
+		Options: []plugin.Option{
+			{Name: "bitcoin-rpcconnect", Type: "string", Description: "Hostname (IP) to bitcoind RPC (optional).", Default: ""},
+			{Name: "bitcoin-rpcport", Type: "string", Description: "Port to bitcoind RPC (optional).", Default: ""},
+			{Name: "bitcoin-rpcuser", Type: "string", Description: "Username to bitcoind RPC (optional).", Default: ""},
+			{Name: "bitcoin-rpcpassword", Type: "string", Description: "Password to bitcoind RPC (optional).", Default: ""},
+		},
 		RPCMethods: []plugin.RPCMethod{
 			{
 				"getrawblockbyheight",
@@ -108,34 +124,13 @@ func main() {
 				"Get the Bitcoin feerate in sat/kilo-vbyte.",
 				"",
 				func(p *plugin.Plugin, params plugin.Params) (resp interface{}, errCode int, err error) {
-					// just copy sauron here
-					feerates, err := getFeeRatesFromEsplora()
+					estfees, err := getFeeRates()
 					if err != nil {
 						p.Logf("estimatefees error: %s", err.Error())
-						return EstimatedFees{nil, nil, nil, nil, nil, nil, nil, nil},
-							0, nil
+						estfees = &EstimatedFees{}
 					}
 
-					var (
-						slow        = int(feerates["504"] * 1000)
-						normal      = int(feerates["10"] * 1000)
-						urgent      = int(feerates["5"] * 1000)
-						very_urgent = int(feerates["2"] * 1000)
-
-						intp = func(x int) *int { return &x }
-					)
-
-					// actually let's be a little more patient here than sauron is
-					return EstimatedFees{
-						Opening:         intp(slow),
-						MutualClose:     intp(normal),
-						UnilateralClose: intp(very_urgent),
-						DelayedToUs:     intp(slow),
-						HTLCResolution:  intp(normal),
-						Penalty:         intp(urgent),
-						MinAcceptable:   intp(slow / 2),
-						MaxAcceptable:   intp(very_urgent * 100),
-					}, 0, nil
+					return *estfees, 0, nil
 				},
 			}, {
 				"sendrawtransaction",
@@ -144,9 +139,8 @@ func main() {
 				"",
 				func(p *plugin.Plugin, params plugin.Params) (resp interface{}, errCode int, err error) {
 					hex := params.Get("tx").String()
-					tx := bytes.NewBufferString(hex)
 
-					srtresp, err := sendRawTransaction(tx)
+					srtresp, err := sendRawTransaction(hex)
 					if err != nil {
 						p.Logf("failed to publish transaction %s: %s", hex, err.Error())
 						return nil, 21, err
@@ -168,15 +162,46 @@ func main() {
 						p.Logf("failed to get tx %s: %s", txid, err.Error())
 						return UTXOResponse{nil, nil}, 0, nil
 					}
-
 					output := tx.Vout[vout]
-
 					return UTXOResponse{&output.Value, &output.ScriptPubKey}, 0, nil
 				},
 			},
 		},
 		OnInit: func(p *plugin.Plugin) {
 			network = p.Network
+
+			// we will try to use a local bitcoind
+			user := p.Args.Get("bitcoin-rpcuser").String()
+			pass := p.Args.Get("bitcoin-rpcpassword").String()
+			if user != "" && pass != "" {
+				hostname := p.Args.Get("bitcoin-rpcconnect").String()
+				if hostname == "" {
+					hostname = "127.0.0.1"
+				}
+				port := p.Args.Get("bitcoin-rpcport").String()
+				if port == "" {
+					port = defaultBitcoindRPCPorts[network]
+					if port == "" {
+						port = "8332"
+					}
+				}
+
+				client, err := rpcclient.New(&rpcclient.ConnConfig{
+					Host:         hostname + ":" + port,
+					User:         user,
+					Pass:         pass,
+					HTTPPostMode: true,
+					DisableTLS:   true,
+				}, nil)
+				if err != nil {
+					p.Log("bitcoind RPC backend settings detected, but failed to connect, will only use block explorers.")
+				} else {
+					p.Log("bitcoind RPC backend detected, will use that with highest priority and fall back to block explorers if it fails.")
+					bitcoind = client
+				}
+			} else {
+				p.Log("bitcoind RPC settings (looked for 'bitcoin-rpcuser', 'bitcoin-rpcpassword' and optionally 'bitcoin-rpcconnect' and 'bitcoin-rpcport') not detected, will only use block explorers.")
+			}
 		},
 	}
 

@@ -22,7 +22,11 @@ disable-plugin=bcli
 
 This disables the default Bitcoin backend plugin so `trustedcoin` can take its place.
 
-If you're running on `testnet` or `liquid` trustedcoin will also work automatically.
+If you're running on `testnet`, `signet` or `liquid` trustedcoin will also work automatically.
+
+## Using `bitcoind`
+
+If you have `bitcoind` available and start `lightningd` with the settings `bitcoin-rpcuser`, `bitcoin-rpcpassword`, and optionally `bitcoin-rpcconnect` (defaults to 127.0.0.1) and `bitcoin-rpcport` (defaults to 8332 on mainnet etc.), then `trustedcoin` will try to use that and fall back to the explorers if it is not available.
 
 ### Extra: how to bootstrap a Lightning node from scratch, without Bitcoin Core, on Ubuntu amd64
 
