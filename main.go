@@ -194,14 +194,20 @@ func main() {
 					DisableTLS:   true,
 				}, nil)
 				if err != nil {
-					p.Log("bitcoind RPC backend settings detected, but failed to connect, will only use block explorers.")
-				} else {
-					p.Log("bitcoind RPC backend detected, will use that with highest priority and fall back to block explorers if it fails.")
-					bitcoind = client
+					p.Log("bitcoind RPC backend settings detected but invalid, will only use block explorers.")
+					return
 				}
-			} else {
-				p.Log("bitcoind RPC settings (looked for 'bitcoin-rpcuser', 'bitcoin-rpcpassword' and optionally 'bitcoin-rpcconnect' and 'bitcoin-rpcport') not detected, will only use block explorers.")
+
+				bitcoind = client
+				if _, err := bitcoind.GetBlockChainInfo(); err == nil {
+					p.Log("bitcoind RPC working, will use that with highest priority and fall back to block explorers if it fails.")
+				} else {
+					p.Log("bitcoind RPC backend settings detected, but failed to connect, will keep trying to use it though.")
+				}
+				return
 			}
+
+			p.Log("bitcoind RPC settings not detected (looked for 'bitcoin-rpcuser', 'bitcoin-rpcpassword' and optionally 'bitcoin-rpcconnect' and 'bitcoin-rpcport'), will only use block explorers.")
 		},
 	}
 
