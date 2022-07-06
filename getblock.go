@@ -76,7 +76,7 @@ func getBlock(height int64) (block, hash string, err error) {
 				continue
 			}
 
-			prevHash := hex.EncodeToString(header.PrevBlock[:])
+			prevHash := hex.EncodeToString(reverseHash(&header.PrevBlock))
 			if cachedPrevHash, ok := heightCache[height-1]; ok {
 				if prevHash != cachedPrevHash {
 					// something is badly wrong with this block
