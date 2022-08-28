@@ -50,7 +50,7 @@ func esploras(network string) (ss []string) {
 func main() {
 	p := plugin.Plugin{
 		Name:    "trustedcoin",
-		Version: "v0.5.1",
+		Version: "v0.5.2",
 		Options: []plugin.Option{
 			{Name: "bitcoin-rpcconnect", Type: "string", Description: "Hostname (IP) to bitcoind RPC (optional).", Default: ""},
 			{Name: "bitcoin-rpcport", Type: "string", Description: "Port to bitcoind RPC (optional).", Default: ""},
