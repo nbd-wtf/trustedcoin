@@ -40,7 +40,9 @@ func sendRawTransaction(txHex string) (resp RawTransactionResponse, err error) {
 
 		if w.StatusCode >= 300 {
 			msg, _ := ioutil.ReadAll(w.Body)
-			return RawTransactionResponse{false, string(msg)}, nil
+			resp = RawTransactionResponse{false, string(msg)}
+			err = nil
+			continue
 		}
 
 		return RawTransactionResponse{true, ""}, nil
