@@ -24,7 +24,7 @@ jobs:
       - make-release
     strategy:
       matrix:
-        goos: [linux, darwin, freebsd, openbsd]
+        goos: [linux, freebsd, openbsd]
         goarch: [amd64, arm64]
     steps:
       - uses: actions/checkout@v3
