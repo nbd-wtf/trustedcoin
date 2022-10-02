@@ -107,6 +107,8 @@ func main() {
 						bip70network = "main"
 					case "testnet":
 						bip70network = "test"
+					case "signet":
+						bip70network = "signet"
 					case "liquid":
 						bip70network = "liquidv1"
 					}
