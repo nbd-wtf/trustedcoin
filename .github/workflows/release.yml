@@ -24,14 +24,22 @@ jobs:
       - make-release
     strategy:
       matrix:
-        goos: [linux, freebsd, openbsd]
-        goarch: [amd64, arm64]
+        os: [linux, freebsd]
+        arch: [amd64, arm64]
     steps:
-      - uses: actions/checkout@v3
-      - uses: wangyoucao577/go-release-action@v1.30
+      - uses: actions/setup-go@v3
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          goos: ${{ matrix.goos }}
-          goarch: ${{ matrix.goarch }}
-          goversion: "1.18"
-          overwrite: true
+          go-version: "1.18"
+      - uses: actions/checkout@v3
+      - if: matrix.arch == 'amd64'
+        run: sudo apt update && sudo apt install -y --no-install-recommends musl-tools
+      - if: matrix.arch == 'amd64'
+        run: CC=$(which musl-gcc) GOOS=${{ matrix.os }} GOARCH=${{ matrix.arch }} go build -ldflags='-s -w -linkmode external -extldflags "-static"' -o ./trustedcoin
+      - if: matrix.arch == 'arm64'
+        run: GOOS=${{ matrix.os }} GOARCH=${{ matrix.arch }} go build -ldflags='-s -w' -o ./trustedcoin
+      - run: tar -czf trustedcoin-${{ matrix.os }}-${{ matrix.arch }}.tar.gz trustedcoin
+      - uses: AButler/upload-release-assets@v2.0
+        with:
+          files: trustedcoin-${{ matrix.os }}-${{ matrix.arch }}.tar.gz
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+          release-tag: ${{ github.ref_name }}
