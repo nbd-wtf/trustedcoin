@@ -8,32 +8,16 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
-	"strconv"
 	"strings"
-	"time"
 
 	"github.com/btcsuite/btcd/btcutil"
 	"github.com/btcsuite/btcd/chaincfg/chainhash"
 	"github.com/btcsuite/btcd/wire"
-	"github.com/rif/cache2go"
 )
 
-var (
-	heightCache = make(map[int64]string)
-	blockCache  = cache2go.New(2, time.Minute*20)
-)
-
-type cachedBlock struct {
-	hash  string
-	block string
-}
+var heightCache = make(map[int64]string)
 
 func getBlock(height int64) (block, hash string, err error) {
-	if res, ok := blockCache.Get(strconv.Itoa(int(height))); ok {
-		data := res.(cachedBlock)
-		return data.block, data.hash, nil
-	}
-
 	hash, err = getHash(height)
 	if err != nil {
 		return
@@ -102,10 +86,7 @@ func getBlock(height int64) (block, hash string, err error) {
 			}
 		}
 
-		delete(heightCache, height)
-
 		blockhex := hex.EncodeToString(block)
-		blockCache.Set(strconv.Itoa(int(height)), cachedBlock{block: blockhex, hash: hash})
 		return blockhex, hash, nil
 	}
 
@@ -145,8 +126,6 @@ func getHash(height int64) (hash string, err error) {
 			err = errors.New("got something that isn't a block hash: " + hash[:64])
 			continue
 		}
-
-		heightCache[height] = hash
 
 		return hash, nil
 	}
