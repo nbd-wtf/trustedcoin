@@ -3,16 +3,15 @@ module github.com/nbd-wtf/trustedcoin
 go 1.18
 
 require (
-	github.com/btcsuite/btcd v0.23.2
+	github.com/btcsuite/btcd v0.23.3
+	github.com/btcsuite/btcd/btcutil v1.1.2
 	github.com/btcsuite/btcd/chaincfg/chainhash v1.0.1
 	github.com/fiatjaf/lightningd-gjson-rpc v1.6.1
-	github.com/rif/cache2go v1.0.0
 )
 
 require (
 	github.com/aead/siphash v1.0.1 // indirect
 	github.com/btcsuite/btcd/btcec/v2 v2.2.0 // indirect
-	github.com/btcsuite/btcd/btcutil v1.1.2 // indirect
 	github.com/btcsuite/btcd/btcutil/psbt v1.1.4 // indirect
 	github.com/btcsuite/btclog v0.0.0-20170628155309-84c8d2346e9f // indirect
 	github.com/btcsuite/btcwallet v0.15.1 // indirect
