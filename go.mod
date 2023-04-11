@@ -6,7 +6,7 @@ require (
 	github.com/btcsuite/btcd v0.23.3
 	github.com/btcsuite/btcd/btcutil v1.1.2
 	github.com/btcsuite/btcd/chaincfg/chainhash v1.0.1
-	github.com/fiatjaf/lightningd-gjson-rpc v1.6.1
+	github.com/fiatjaf/lightningd-gjson-rpc v1.6.2
 )
 
 require (

@@ -178,6 +178,8 @@ github.com/fergusstrange/embedded-postgres v1.10.0 h1:YnwF6xAQYmKLAXXrrRx4rHDLih
 github.com/fergusstrange/embedded-postgres v1.10.0/go.mod h1:a008U8/Rws5FtIOTGYDYa7beVWsT3qVKyqExqYYjL+c=
 github.com/fiatjaf/lightningd-gjson-rpc v1.6.1 h1:gFU4Ekmn3iVQArKsvqr1W6V8YGUt+9iHT6+I2QUECq8=
 github.com/fiatjaf/lightningd-gjson-rpc v1.6.1/go.mod h1:DqVHlrgk0q0J08nbPBCwDVuB7vzPohRnrzuGZ0ct0fg=
+github.com/fiatjaf/lightningd-gjson-rpc v1.6.2 h1:QlnPE3piGCAd8qElWIPuVbDYq4E1WTspgwP01q3olrI=
+github.com/fiatjaf/lightningd-gjson-rpc v1.6.2/go.mod h1:DqVHlrgk0q0J08nbPBCwDVuB7vzPohRnrzuGZ0ct0fg=
 github.com/form3tech-oss/jwt-go v3.2.3+incompatible h1:7ZaBxOI7TMoYBfyA3cQHErNNyAWIKUMIwqxEtgHOs5c=
 github.com/form3tech-oss/jwt-go v3.2.3+incompatible/go.mod h1:pbq4aXjuKjdthFRnoDwaVPLA+WlJuPGy+QneDUgJi2k=
 github.com/frankban/quicktest v1.2.2/go.mod h1:Qh/WofXFeiAFII1aEBu529AtJo6Zg2VHscnEsbBnJ20=

@@ -1,6 +1,7 @@
 package main
 
 import (
+	"os"
 	"fmt"
 	"math/rand"
 
@@ -171,6 +172,17 @@ func main() {
 		},
 		OnInit: func(p *plugin.Plugin) {
 			network = p.Network
+
+			proxy := p.Configuration.Get("proxy")
+			always_use_proxy := p.Configuration.Get("always_use_proxy").Bool()
+
+			if proxy.Exists() && always_use_proxy {
+				socks_proxy := "socks5://" + proxy.Get("address").String() + ":" + proxy.Get("port").String()
+				p.Logf("using proxy: %s", socks_proxy)
+
+				os.Setenv("HTTP_PROXY", socks_proxy)
+				os.Setenv("HTTPS_PROXY", socks_proxy)
+			}
 
 			// we will try to use a local bitcoind
 			user := p.Args.Get("bitcoin-rpcuser").String()
