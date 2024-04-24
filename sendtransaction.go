@@ -14,7 +14,7 @@ type RawTransactionResponse struct {
 	ErrMsg  string `json:"errmsg"`
 }
 
-func sendRawTransaction(txHex string) (resp RawTransactionResponse, err error) {
+func sendRawTransaction(txHex string) (resp RawTransactionResponse) {
 	// try bitcoind first
 	if bitcoind != nil {
 		tx := &wire.MsgTx{}
@@ -22,7 +22,7 @@ func sendRawTransaction(txHex string) (resp RawTransactionResponse, err error) {
 			txBuf := bytes.NewBuffer(txBytes)
 			if err := tx.BtcDecode(txBuf, wire.ProtocolVersion, wire.WitnessEncoding); err == nil {
 				if _, err := bitcoind.SendRawTransaction(tx, true); err == nil {
-					return RawTransactionResponse{true, ""}, nil
+					return RawTransactionResponse{true, ""}
 				}
 			}
 		}
@@ -31,9 +31,9 @@ func sendRawTransaction(txHex string) (resp RawTransactionResponse, err error) {
 	// then try explorers
 	tx := bytes.NewBufferString(txHex)
 	for _, endpoint := range esploras(network) {
-		w, errW := http.Post(endpoint+"/tx", "text/plain", tx)
-		if errW != nil {
-			err = errW
+		w, err := http.Post(endpoint+"/tx", "text/plain", tx)
+		if err != nil {
+			resp = RawTransactionResponse{false, err.Error()}
 			continue
 		}
 		defer w.Body.Close()
@@ -45,8 +45,8 @@ func sendRawTransaction(txHex string) (resp RawTransactionResponse, err error) {
 			continue
 		}
 
-		return RawTransactionResponse{true, ""}, nil
+		return RawTransactionResponse{true, ""}
 	}
 
-	return resp, err
+	return resp
 }

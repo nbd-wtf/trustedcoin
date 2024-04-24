@@ -144,13 +144,7 @@ func main() {
 				func(p *plugin.Plugin, params plugin.Params) (resp interface{}, errCode int, err error) {
 					hex := params.Get("tx").String()
 
-					srtresp, err := sendRawTransaction(hex)
-					if err != nil {
-						p.Logf("failed to publish transaction %s: %s", hex, err.Error())
-						return nil, 21, err
-					}
-
-					return srtresp, 0, nil
+					return sendRawTransaction(hex), 0, nil
 				},
 			}, {
 				"getutxout",
