@@ -39,14 +39,8 @@ apt install lightningd
 mkdir -p ~/.lightning/plugins
 echo 'disable-plugin=bcli' >> .lightning/config
 cd ~/.lightning/plugins
-wget https://github.com/nbd-wtf/trustedcoin/releases/download/v0.7.0/trustedcoin-v0.7.0-linux-amd64.tar.gz
-tar -xvf trustedcoin-v0.7.0-linux-amd64.tar.gz
+wget https://github.com/nbd-wtf/trustedcoin/releases/download/v0.8.0/trustedcoin-v0.8.0-linux-amd64.tar.gz
+tar -xvf trustedcoin-v0.8.0-linux-amd64.tar.gz
 cd
 lightningd
-```
-
-## How to build
-
-```
-go build
 ```

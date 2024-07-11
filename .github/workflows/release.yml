@@ -12,7 +12,7 @@ jobs:
   make-release:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/create-release@latest
+      - uses: actions/create-release@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
@@ -29,13 +29,13 @@ jobs:
     env:
       CGO_ENABLED: 0
     steps:
-      - uses: actions/checkout@latest
-      - uses: wangyoucao577/go-release-action@latest
+      - uses: actions/checkout@v4
+      - uses: wangyoucao577/go-release-action@v1
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           goos: ${{ matrix.goos }}
           goarch: ${{ matrix.goarch }}
           goversion: "1.22"
           build_flags: -trimpath
-          ldflags: -d -s -w
+          ldflags: -s -w
           overwrite: true
