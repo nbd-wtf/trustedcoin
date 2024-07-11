@@ -46,6 +46,8 @@ func getFeeRates() (*EstimatedFees, error) {
 			}
 			estimated.MinAcceptable = intp(*estimated.MutualClose / 2)
 			estimated.MaxAcceptable = intp(*estimated.UnilateralClose * 100)
+
+			return estimated, nil
 		}
 	}
 
