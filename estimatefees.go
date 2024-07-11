@@ -9,14 +9,11 @@ import (
 )
 
 type EstimatedFees struct {
-	Opening         *int `json:"opening"`
-	MutualClose     *int `json:"mutual_close"`
-	UnilateralClose *int `json:"unilateral_close"`
-	DelayedToUs     *int `json:"delayed_to_us"`
-	HTLCResolution  *int `json:"htlc_resolution"`
-	Penalty         *int `json:"penalty"`
-	MinAcceptable   *int `json:"min_acceptable"`
-	MaxAcceptable   *int `json:"max_acceptable"`
+	FeeRateFloor *int `json:"feerate_floor"`
+	FeeRates     []struct {
+		Blocks  *int `json:"blocks"`
+		FeeRate *int `json:"feerate"`
+	} `json:"feerates"`
 }
 
 var intp = func(x int) *int { return &x }
@@ -36,18 +33,18 @@ func getFeeRates() (*EstimatedFees, error) {
 				return &x
 			}
 
-			estimated := &EstimatedFees{
-				Opening:         satPerKbP(in12),
-				MutualClose:     satPerKbP(in100),
-				UnilateralClose: satPerKbP(in2),
-				DelayedToUs:     satPerKbP(in12),
-				HTLCResolution:  satPerKbP(in12),
-				Penalty:         satPerKbP(in12),
-			}
-			estimated.MinAcceptable = intp(*estimated.MutualClose / 2)
-			estimated.MaxAcceptable = intp(*estimated.UnilateralClose * 100)
-
-			return estimated, nil
+			return &EstimatedFees{
+				FeeRateFloor: satPerKbP(in100),
+				FeeRates: []struct {
+					Blocks  *int `json:"blocks"`
+					FeeRate *int `json:"feerate"`
+				}{
+					{Blocks: intp(2), FeeRate: satPerKbP(in2)},
+					{Blocks: intp(6), FeeRate: satPerKbP(in6)},
+					{Blocks: intp(12), FeeRate: satPerKbP(in12)},
+					{Blocks: intp(100), FeeRate: satPerKbP(in100)},
+				},
+			}, nil
 		}
 	}
 
@@ -67,14 +64,16 @@ func getFeeRates() (*EstimatedFees, error) {
 
 	// actually let's be a little more patient here than sauron is
 	return &EstimatedFees{
-		Opening:         intp(slow),
-		MutualClose:     intp(normal),
-		UnilateralClose: intp(very_urgent),
-		DelayedToUs:     intp(slow),
-		HTLCResolution:  intp(normal),
-		Penalty:         intp(urgent),
-		MinAcceptable:   intp(slow / 2),
-		MaxAcceptable:   intp(very_urgent * 100),
+		FeeRateFloor: intp(slow),
+		FeeRates: []struct {
+			Blocks  *int `json:"blocks"`
+			FeeRate *int `json:"feerate"`
+		}{
+			{Blocks: intp(2), FeeRate: intp(very_urgent)},
+			{Blocks: intp(5), FeeRate: intp(urgent)},
+			{Blocks: intp(10), FeeRate: intp(normal)},
+			{Blocks: intp(504), FeeRate: intp(slow)},
+		},
 	}, nil
 }
 
