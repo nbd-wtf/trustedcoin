@@ -8,6 +8,8 @@ import (
 	"github.com/fiatjaf/lightningd-gjson-rpc/plugin"
 )
 
+const version = "0.7.1"
+
 var (
 	network string
 	esplora = map[string][]string{
@@ -50,7 +52,7 @@ func esploras(network string) (ss []string) {
 func main() {
 	p := plugin.Plugin{
 		Name:    "trustedcoin",
-		Version: "v0.6.1",
+		Version: version,
 		Options: []plugin.Option{
 			{Name: "bitcoin-rpcconnect", Type: "string", Description: "Hostname (IP) to bitcoind RPC (optional).", Default: ""},
 			{Name: "bitcoin-rpcport", Type: "string", Description: "Port to bitcoind RPC (optional).", Default: ""},
@@ -59,14 +61,14 @@ func main() {
 		},
 		RPCMethods: []plugin.RPCMethod{
 			{
-				"getrawblockbyheight",
-				"height",
-				"Get the bitcoin block at a given height",
-				"",
-				func(p *plugin.Plugin, params plugin.Params) (resp interface{}, errCode int, err error) {
+				Name:            "getrawblockbyheight",
+				Usage:           "height",
+				Description:     "Get the bitcoin block at a given height",
+				LongDescription: "",
+				Handler: func(p *plugin.Plugin, params plugin.Params) (resp any, errCode int, err error) {
 					height := params.Get("height").Int()
 
-					blockUnavailable := map[string]interface{}{
+					blockUnavailable := map[string]any{
 						"blockhash": nil,
 						"block":     nil,
 					}
@@ -89,11 +91,11 @@ func main() {
 					}{hash, string(block)}, 0, nil
 				},
 			}, {
-				"getchaininfo",
-				"",
-				"Get the chain id, the header count, the block count and whether this is IBD.",
-				"",
-				func(p *plugin.Plugin, params plugin.Params) (resp interface{}, errCode int, err error) {
+				Name:            "getchaininfo",
+				Usage:           "",
+				Description:     "Get the chain id, the header count, the block count and whether this is IBD.",
+				LongDescription: "",
+				Handler: func(p *plugin.Plugin, params plugin.Params) (resp any, errCode int, err error) {
 					tip, err := getTip()
 					if err != nil {
 						return nil, 20, fmt.Errorf("failed to get tip: %s", err.Error())
@@ -123,11 +125,11 @@ func main() {
 					}{bip70network, tip, tip, false}, 0, nil
 				},
 			}, {
-				"estimatefees",
-				"",
-				"Get the Bitcoin feerate in sat/kilo-vbyte.",
-				"",
-				func(p *plugin.Plugin, params plugin.Params) (resp interface{}, errCode int, err error) {
+				Name:            "estimatefees",
+				Usage:           "",
+				Description:     "Get the Bitcoin feerate in sat/kilo-vbyte.",
+				LongDescription: "",
+				Handler: func(p *plugin.Plugin, params plugin.Params) (resp any, errCode int, err error) {
 					estfees, err := getFeeRates()
 					if err != nil {
 						p.Logf("estimatefees error: %s", err.Error())
@@ -137,21 +139,21 @@ func main() {
 					return *estfees, 0, nil
 				},
 			}, {
-				"sendrawtransaction",
-				"tx",
-				"Send a raw transaction to the Bitcoin network.",
-				"",
-				func(p *plugin.Plugin, params plugin.Params) (resp interface{}, errCode int, err error) {
+				Name:            "sendrawtransaction",
+				Usage:           "tx",
+				Description:     "Send a raw transaction to the Bitcoin network.",
+				LongDescription: "",
+				Handler: func(p *plugin.Plugin, params plugin.Params) (resp any, errCode int, err error) {
 					hex := params.Get("tx").String()
 
 					return sendRawTransaction(hex), 0, nil
 				},
 			}, {
-				"getutxout",
-				"txid vout",
-				"Get informations about an output, identified by a {txid} an a {vout}",
-				"",
-				func(p *plugin.Plugin, params plugin.Params) (resp interface{}, errCode int, err error) {
+				Name:            "getutxout",
+				Usage:           "txid vout",
+				Description:     "Get informations about an output, identified by a {txid} an a {vout}",
+				LongDescription: "",
+				Handler: func(p *plugin.Plugin, params plugin.Params) (resp any, errCode int, err error) {
 					txid := params.Get("txid").String()
 					vout := params.Get("vout").Int()
 
