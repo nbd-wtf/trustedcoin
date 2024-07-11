@@ -6,7 +6,7 @@ A plugin that uses block explorers (blockstream.info, mempool.space, blockchair.
 
 This isn't what you should be doing, but sometimes you may need it.
 
-(Remember this will download all blocks c-lightning needs from blockchain.info or blockchair.com in raw, hex format.)
+(Remember this will download all blocks Core Lightning needs from blockchain.info or blockchair.com in raw, hex format.)
 
 ## How to install
 
