@@ -9,14 +9,14 @@ import (
 )
 
 type EstimatedFees struct {
-	FeeRateFloor *int `json:"feerate_floor"`
-	FeeRates     []struct {
-		Blocks  *int `json:"blocks"`
-		FeeRate *int `json:"feerate"`
-	} `json:"feerates"`
+	FeeRateFloor int       `json:"feerate_floor"`
+	FeeRates     []FeeRate `json:"feerates"`
 }
 
-var intp = func(x int) *int { return &x }
+type FeeRate struct {
+	Blocks  int `json:"blocks"`
+	FeeRate int `json:"feerate"`
+}
 
 func getFeeRates() (*EstimatedFees, error) {
 	// try bitcoind first
@@ -28,21 +28,17 @@ func getFeeRates() (*EstimatedFees, error) {
 		if err2 == nil && err6 == nil && err12 == nil && err100 == nil &&
 			in2.FeeRate != nil && in6.FeeRate != nil && in12.FeeRate != nil && in100.FeeRate != nil {
 
-			satPerKbP := func(r *btcjson.EstimateSmartFeeResult) *int {
-				x := int(*r.FeeRate * float64(100000000))
-				return &x
+			satPerKbP := func(r *btcjson.EstimateSmartFeeResult) int {
+				return int(*r.FeeRate * float64(100000000))
 			}
 
 			return &EstimatedFees{
 				FeeRateFloor: satPerKbP(in100),
-				FeeRates: []struct {
-					Blocks  *int `json:"blocks"`
-					FeeRate *int `json:"feerate"`
-				}{
-					{Blocks: intp(2), FeeRate: satPerKbP(in2)},
-					{Blocks: intp(6), FeeRate: satPerKbP(in6)},
-					{Blocks: intp(12), FeeRate: satPerKbP(in12)},
-					{Blocks: intp(100), FeeRate: satPerKbP(in100)},
+				FeeRates: []FeeRate{
+					{Blocks: 2, FeeRate: satPerKbP(in2)},
+					{Blocks: 6, FeeRate: satPerKbP(in6)},
+					{Blocks: 12, FeeRate: satPerKbP(in12)},
+					{Blocks: 100, FeeRate: satPerKbP(in100)},
 				},
 			}, nil
 		}
@@ -55,24 +51,19 @@ func getFeeRates() (*EstimatedFees, error) {
 		return nil, err
 	}
 
-	var (
-		slow        = int(feerates["504"] * 1000)
-		normal      = int(feerates["10"] * 1000)
-		urgent      = int(feerates["5"] * 1000)
-		very_urgent = int(feerates["2"] * 1000)
-	)
-
 	// actually let's be a little more patient here than sauron is
+	slow := int(feerates["504"] * 1000)
+	normal := int(feerates["10"] * 1000)
+	urgent := int(feerates["5"] * 1000)
+	veryUrgent := int(feerates["2"] * 1000)
+
 	return &EstimatedFees{
-		FeeRateFloor: intp(slow),
-		FeeRates: []struct {
-			Blocks  *int `json:"blocks"`
-			FeeRate *int `json:"feerate"`
-		}{
-			{Blocks: intp(2), FeeRate: intp(very_urgent)},
-			{Blocks: intp(5), FeeRate: intp(urgent)},
-			{Blocks: intp(10), FeeRate: intp(normal)},
-			{Blocks: intp(504), FeeRate: intp(slow)},
+		FeeRateFloor: slow,
+		FeeRates: []FeeRate{
+			{Blocks: 2, FeeRate: veryUrgent},
+			{Blocks: 5, FeeRate: urgent},
+			{Blocks: 10, FeeRate: normal},
+			{Blocks: 504, FeeRate: slow},
 		},
 	}, nil
 }
