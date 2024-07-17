@@ -78,14 +78,15 @@ func getFeeRatesFromEsplora() (feerates map[string]float64, err error) {
 		defer w.Body.Close()
 
 		if w.StatusCode >= 300 {
-			err = errors.New(endpoint + " error: " + w.Status)
-			return
+			continue
 		}
 
-		err = json.NewDecoder(w.Body).Decode(&feerates)
-		return
+		if err := json.NewDecoder(w.Body).Decode(&feerates); err != nil {
+			continue
+		} else {
+			return feerates, nil
+		}
 	}
 
-	err = errors.New("none of the esploras returned usable responses")
-	return
+	return nil, errors.New("none of the esploras returned usable responses")
 }
