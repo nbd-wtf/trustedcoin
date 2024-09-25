@@ -1,0 +1,162 @@
+schema = 3
+
+[mod]
+[mod."github.com/aead/siphash"]
+version = "v1.0.1"
+hash = "sha256-zP7VoPA7YHxa+lMwnOXRJo3rfVZFsCTtgJYwLdAPbQY="
+[mod."github.com/btcsuite/btcd"]
+version = "v0.24.2"
+hash = "sha256-ahlpwEr4KfyrEA899X07QtuSDnC8U+SnwL+z72DiK5E="
+[mod."github.com/btcsuite/btcd/btcec/v2"]
+version = "v2.3.3"
+hash = "sha256-1L9u3uPeskDd8Lv8Eq54tXi8f5Vj/KwfT2i+qPCA+pg="
+[mod."github.com/btcsuite/btcd/btcutil"]
+version = "v1.1.5"
+hash = "sha256-eLIT+g0bkwBiy0MGU//lH+Iw4OffxVe0ZW8WoMFM+Ds="
+[mod."github.com/btcsuite/btcd/btcutil/psbt"]
+version = "v1.1.9"
+hash = "sha256-lKVieT67q6RLA4iFrjHOfDDI5asSUaZlQKK337og/l8="
+[mod."github.com/btcsuite/btcd/chaincfg/chainhash"]
+version = "v1.1.0"
+hash = "sha256-F+EqvufC+KBslZV/vL8ph6MqDoVD5ic5rVaM27reDqo="
+[mod."github.com/btcsuite/btclog"]
+version = "v0.0.0-20170628155309-84c8d2346e9f"
+hash = "sha256-1QPk5K1P5oTgo8CuvJioDkU/uUe42aejPro4mc45ctA="
+[mod."github.com/btcsuite/btcwallet"]
+version = "v0.16.10-0.20240706055350-e391a1c31df2"
+hash = "sha256-x5Jq0roeHKiXG25IGgWKiRkmelF4P3508asoGPjIEFA="
+[mod."github.com/btcsuite/btcwallet/wallet/txauthor"]
+version = "v1.3.4"
+hash = "sha256-o8PDgky/F9KbWM8dIJhG9NjRASSoAlJ18DhF3XZub1Y="
+[mod."github.com/btcsuite/btcwallet/wallet/txrules"]
+version = "v1.2.1"
+hash = "sha256-dJdqIYnYStW0Hi5C9ElzuX6CeX6mizDHbSMAUmkbTpg="
+[mod."github.com/btcsuite/btcwallet/wallet/txsizes"]
+version = "v1.2.4"
+hash = "sha256-w6HBRA6IlQ6lE3d2tGviFB170j0YjLBIzuEs5nR+wso="
+[mod."github.com/btcsuite/btcwallet/walletdb"]
+version = "v1.4.2"
+hash = "sha256-RYasAhkmHk5YWCNAl4dsPhowtiJxap+hNattz27qK6k="
+[mod."github.com/btcsuite/btcwallet/wtxmgr"]
+version = "v1.5.3"
+hash = "sha256-w9GfTziFWbGO+67HGrJRzpcLZF9XxFAdgJjWjfhKz0Q="
+[mod."github.com/btcsuite/go-socks"]
+version = "v0.0.0-20170105172521-4720035b7bfd"
+hash = "sha256-67Qxks78SQ0CIze4EZ9wRSsKQ4Le3JQ0wTQVIFkUm6E="
+[mod."github.com/btcsuite/websocket"]
+version = "v0.0.0-20150119174127-31079b680792"
+hash = "sha256-ikuWaDjy3H8xKFXaUXv3pQEbCOsdnv2au87Qeopw83Y="
+[mod."github.com/btcsuite/winsvc"]
+version = "v1.0.0"
+hash = "sha256-P3Daw2hlug+lererp+0qkrGbfU2QGTmUyB8WZZBHXFs="
+[mod."github.com/davecgh/go-spew"]
+version = "v1.1.1"
+hash = "sha256-nhzSUrE1fCkN0+RL04N4h8jWmRFPPPWbCuDc7Ss0akI="
+[mod."github.com/decred/dcrd/crypto/blake256"]
+version = "v1.0.1"
+hash = "sha256-YvgssFO1q59EURkk33WEjW0emS8km3i/8YXpfI0+/xo="
+[mod."github.com/decred/dcrd/dcrec/secp256k1/v4"]
+version = "v4.3.0"
+hash = "sha256-ADbhI5Ad+q3OxooIiYeLAq5mMONk1gPIAnTch9zKsIM="
+[mod."github.com/decred/dcrd/lru"]
+version = "v1.1.3"
+hash = "sha256-emQK3ZjXycOQ+oul3d8xTSVzYdWwyTxAfUm4f88Jyjk="
+[mod."github.com/fiatjaf/lightningd-gjson-rpc"]
+version = "v1.6.2"
+hash = "sha256-e87MLe8B/4ESadN0Z/PLKTZ9FAMHn0rllNdv+P0oSno="
+[mod."github.com/go-errors/errors"]
+version = "v1.5.1"
+hash = "sha256-K/IEfka2mbBk6b0AbiMaxpvkY1pZgzhtT6knqoDovPk="
+[mod."github.com/golang/snappy"]
+version = "v0.0.4"
+hash = "sha256-Umx+5xHAQCN/Gi4HbtMhnDCSPFAXSsjVbXd8n5LhjAA="
+[mod."github.com/jessevdk/go-flags"]
+version = "v1.6.1"
+hash = "sha256-Q5WFTgRxYio0+ay3sbQeBPKeJAFvOdiDVkaTVn3hoTA="
+[mod."github.com/jrick/logrotate"]
+version = "v1.0.0"
+hash = "sha256-1JZrSgDekqwoWcHb9SnaBO56u0Z5nbvsiBdL/qIzNGs="
+[mod."github.com/kkdai/bstream"]
+version = "v1.0.0"
+hash = "sha256-/MCLixETTkczTqQdPEbhpQwMNR9bdk/Wg25OCFFheQk="
+[mod."github.com/lightninglabs/gozmq"]
+version = "v0.0.0-20191113021534-d20a764486bf"
+hash = "sha256-rNaRA6t5eP86vSsNDJfSPPCJjDasBmzq/Em5V4O6PB0="
+[mod."github.com/lightninglabs/neutrino"]
+version = "v0.16.1-0.20240425105051-602843d34ffd"
+hash = "sha256-5P45Ru1nlcfPrHr35Cucs+Ti8GS5lvsZ2+Yb7YYTXyo="
+[mod."github.com/lightninglabs/neutrino/cache"]
+version = "v1.1.2"
+hash = "sha256-ii3ddz8bYyJehWka9F6F7uHQjqS0PJ3/3qxSsmlTHtU="
+[mod."github.com/lightningnetwork/lnd"]
+version = "v0.18.2-beta"
+hash = "sha256-JPkKd/oDFAoKUMfRALCWVFcAo+6Pr/mNCxIFlkRnKFo="
+[mod."github.com/lightningnetwork/lnd/clock"]
+version = "v1.1.1"
+hash = "sha256-i1nZX+jZBn7cVe6qqqowgddM2kDyFO60QrHqnLeZTZE="
+[mod."github.com/lightningnetwork/lnd/fn"]
+version = "v1.1.0"
+hash = "sha256-OfqbTcj6nbezOxUEArR3QiGGePhJ8RuJineYR36exdM="
+[mod."github.com/lightningnetwork/lnd/queue"]
+version = "v1.1.1"
+hash = "sha256-tu0I6u0A0/Ioin8z/8hZFrw/jJ6WrIpT0B39OjWk418="
+[mod."github.com/lightningnetwork/lnd/ticker"]
+version = "v1.1.1"
+hash = "sha256-vL3QTHw/3pMy9yzPDymyXcJHegHYVBuEyXeuQT/eQnQ="
+[mod."github.com/lightningnetwork/lnd/tlv"]
+version = "v1.2.6"
+hash = "sha256-B5tuF4tW5SiKUj0Q6w8na1jqUG47oOlvTFhlPmkRTRo="
+[mod."github.com/lightningnetwork/lnd/tor"]
+version = "v1.1.3"
+hash = "sha256-Z/EJ25shfafMnH5ZyczubZqqiZPDnthlycvrNUvs3X0="
+[mod."github.com/miekg/dns"]
+version = "v1.1.61"
+hash = "sha256-LVd9lUiyjszM6gdAxTkLF4WZcg25WbUSfP6HttoAAJs="
+[mod."github.com/pmezard/go-difflib"]
+version = "v1.0.0"
+hash = "sha256-/FtmHnaGjdvEIKAJtrUfEhV7EVo5A/eYrtdnUkuxLDA="
+[mod."github.com/stretchr/objx"]
+version = "v0.5.2"
+hash = "sha256-VKYxrrFb1nkX6Wu3tE5DoP9+fCttwSl9pgLN6567nck="
+[mod."github.com/stretchr/testify"]
+version = "v1.9.0"
+hash = "sha256-uUp/On+1nK+lARkTVtb5RxlW15zxtw2kaAFuIASA+J0="
+[mod."github.com/syndtr/goleveldb"]
+version = "v1.0.1-0.20210819022825-2ae1ddf74ef7"
+hash = "sha256-36a4hgVQfwtS2zhylKpQuFhrjdc/Y8pF0dxc26jcZIU="
+[mod."github.com/tidwall/gjson"]
+version = "v1.17.1"
+hash = "sha256-5R38cFZFaVbdem2B+9rsbr+0hRxbtDQ0i5PYWPT6kj0="
+[mod."github.com/tidwall/match"]
+version = "v1.1.1"
+hash = "sha256-M2klhPId3Q3T3VGkSbOkYl/2nLHnsG+yMbXkPkyrRdg="
+[mod."github.com/tidwall/pretty"]
+version = "v1.2.1"
+hash = "sha256-S0uTDDGD8qr415Ut7QinyXljCp0TkL4zOIrlJ+9OMl8="
+[mod."golang.org/x/crypto"]
+version = "v0.25.0"
+hash = "sha256-traLAylqoBwGIh0Z1fuEhNjbGgQBItgVjtZYdYr0zzQ="
+[mod."golang.org/x/exp"]
+version = "v0.0.0-20240707233637-46b078467d37"
+hash = "sha256-jTwnJtpErpBIGT38VAJI8+UAnGfa8V3M1y1yN4dHTvE="
+[mod."golang.org/x/mod"]
+version = "v0.19.0"
+hash = "sha256-9TUzg1aDvdZw3Z8IyGGSVSnLfUwgeGC/vrnkhkarXL4="
+[mod."golang.org/x/net"]
+version = "v0.27.0"
+hash = "sha256-GrlN5isYeEVrPZVAHK0MDQatttbnyfSPoWJHj0xqhjk="
+[mod."golang.org/x/sync"]
+version = "v0.7.0"
+hash = "sha256-2ETllEu2GDWoOd/yMkOkLC2hWBpKzbVZ8LhjLu0d2A8="
+[mod."golang.org/x/sys"]
+version = "v0.22.0"
+hash = "sha256-RbG0XaXGGlErCsl2agvUxMnrkRwdbJLmriYT1H24FwA="
+[mod."golang.org/x/term"]
+version = "v0.22.0"
+hash = "sha256-tRx/y4ZIZzGAlDJ/8JW3AycC9bRXlNuRqO4V48sAEEc="
+[mod."golang.org/x/tools"]
+version = "v0.23.0"
+hash = "sha256-z+9n75A3H4YtF+m60qwOXnmrVFtOvXsKQmc+i7Mb6q0="
+[mod."gopkg.in/yaml.v3"]
+version = "v3.0.1"
+hash = "sha256-FqL9TKYJ0XkNwJFnq9j0VvJ5ZUU1RvH/52h/f5bkYAU="
