@@ -2,11 +2,11 @@
 
 ## The `trustedcoin` plugin
 
-A plugin that uses block explorers (blockstream.info, mempool.space, blockchair.com and blockchain.info) as backends instead of your own Bitcoin node.
+A plugin that uses block explorers (`blockstream.info`, `mempool.space`, `mempool.emzy.de`, `blockchair.com`, `blockchain.info` -- [suggest others](https://github.com/fiatjaf/trustedcoin/issues)) as backends instead of your own Bitcoin node.
 
 This isn't what you should be doing, but sometimes you may need it.
 
-(Remember this will download all blocks Core Lightning needs from blockchain.info or blockchair.com in raw, hex format.)
+(Remember this will download all blocks CLN needs from one of these providers.)
 
 ## How to install
 
@@ -28,7 +28,7 @@ If you're running on `testnet`, `signet` or `liquid` trustedcoin will also work 
 
 ## Using `bitcoind`
 
-If you have `bitcoind` available and start `lightningd` with the settings `bitcoin-rpcuser`, `bitcoin-rpcpassword`, and optionally `bitcoin-rpcconnect` (defaults to 127.0.0.1) and `bitcoin-rpcport` (defaults to 8332 on mainnet etc.), then `trustedcoin` will try to use that and fall back to the explorers if it is not available.
+If you have `bitcoind` available and start `lightningd` with the settings `bitcoin-rpcuser`, `bitcoin-rpcpassword`, and optionally `bitcoin-rpcconnect` (defaults to 127.0.0.1) and `bitcoin-rpcport` (defaults to 8332 on mainnet etc.), then `trustedcoin` will try to use that and fall back to the explorers when it is not available -- so now you can have a node running at home and it will not be the end of the world for your CLN node when there is a power outage.
 
 ### Extra: how to bootstrap a Lightning node from scratch, without Bitcoin Core, on Ubuntu amd64
 
