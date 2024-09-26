@@ -3,7 +3,7 @@ package main
 import (
 	"bytes"
 	"encoding/hex"
-	"io/ioutil"
+	"io"
 	"net/http"
 
 	"github.com/btcsuite/btcd/wire"
@@ -39,7 +39,7 @@ func sendRawTransaction(txHex string) (resp RawTransactionResponse) {
 		defer w.Body.Close()
 
 		if w.StatusCode >= 300 {
-			msg, _ := ioutil.ReadAll(w.Body)
+			msg, _ := io.ReadAll(w.Body)
 			resp = RawTransactionResponse{false, string(msg)}
 			err = nil
 			continue

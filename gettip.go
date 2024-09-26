@@ -1,7 +1,7 @@
 package main
 
 import (
-	"io/ioutil"
+	"io"
 	"net/http"
 	"strconv"
 )
@@ -23,7 +23,7 @@ func getTip() (tip int64, err error) {
 		}
 		defer w.Body.Close()
 
-		data, errW := ioutil.ReadAll(w.Body)
+		data, errW := io.ReadAll(w.Body)
 		if errW != nil {
 			err = errW
 			continue

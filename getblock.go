@@ -6,7 +6,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"strings"
 
@@ -114,7 +114,7 @@ func getHash(height int64) (hash string, err error) {
 			continue
 		}
 
-		data, errW := ioutil.ReadAll(w.Body)
+		data, errW := io.ReadAll(w.Body)
 		if errW != nil {
 			err = errW
 			continue
@@ -148,7 +148,7 @@ func blockFromBlockchainInfo(hash string) ([]byte, error) {
 	}
 	defer w.Body.Close()
 
-	block, _ := ioutil.ReadAll(w.Body)
+	block, _ := io.ReadAll(w.Body)
 	if len(block) < 100 {
 		// block not available here yet
 		return nil, nil
@@ -214,7 +214,7 @@ func blockFromEsplora(hash string) ([]byte, error) {
 		}
 
 		defer w.Body.Close()
-		block, _ = ioutil.ReadAll(w.Body)
+		block, _ = io.ReadAll(w.Body)
 
 		if len(block) < 200 {
 			// block not available yet
