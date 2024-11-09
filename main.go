@@ -40,12 +40,13 @@ var (
 )
 
 func esploras(network string) (ss []string) {
-	n := len(esplora[network])
-	index := rand.Intn(10)
-	ss = make([]string, n)
-	for i := 0; i < n; i++ {
-		ss[i] = esplora[network][index%n]
-	}
+	ss = make([]string, len(esplora[network]))
+	copy(ss, esplora[network])
+
+	rand.Shuffle(len(ss), func(i, j int) {
+		ss[i], ss[j] = ss[j], ss[i]
+	})
+
 	return ss
 }
 
