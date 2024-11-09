@@ -2,6 +2,8 @@
 
 ## The `trustedcoin` plugin
 
+[![continuous integration](https://github.com/nbd-wtf/trustedcoin/actions/workflows/test.yml/badge.svg)](https://github.com/nbd-wtf/trustedcoin/actions/workflows/test.yml)
+
 A plugin that uses block explorers (`blockstream.info`, `mempool.space`, `mempool.emzy.de`, `blockchair.com`, `blockchain.info` -- [suggest others](https://github.com/fiatjaf/trustedcoin/issues)) as backends instead of your own Bitcoin node.
 
 This isn't what you should be doing, but sometimes you may need it.
