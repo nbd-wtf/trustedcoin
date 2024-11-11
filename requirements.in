@@ -1,0 +1,12 @@
+# build updated requirements.txt with:
+#   $ python -m venv venv
+#   $ source venv/bin/activate
+#   $ pip install pip-tools
+#   $ pip-compile --strip-extras requirements.in
+# load current requirements.txt in a virtualenv with:
+#   $ python -m venv venv
+#   $ source venv/bin/activate
+#   $ pip install -r requirements.txt
+
+pyln.client
+pyln.testing

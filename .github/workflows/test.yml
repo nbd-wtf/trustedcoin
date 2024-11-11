@@ -2,13 +2,42 @@ name: continuous integration
 
 on: push
 
+env:
+  BITCOIN_CORE_VERSION: '27.2'
+  CORE_LIGHTNING_VERSION: '24.08.2'
+  GO_VERSION: '1.22'
+  PYTHON_VERSION: '3.13'
+
 jobs:
-  test:
-    runs-on: ubuntu-latest
+  isolation-tests:
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-go@v5
         with:
-          go-version: 1.22
+          go-version: ${{ env.GO_VERSION }}
       - run: make trustedcoin
       - run: go test -v
+
+  integration-tests:
+    runs-on: ubuntu-24.04
+    env:
+      VENV_PATH: venv
+      VALGRIND: 0
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version: ${{ env.GO_VERSION }}
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+      - run: make trustedcoin
+      - run: .github/scripts/install-bitcoind.sh
+      - run: .github/scripts/install-cln.sh
+      - run: |
+          python -m venv ${{ env.VENV_PATH }}
+          echo "${{ env.VENV_PATH }}/bin" >> $GITHUB_PATH
+          source ${{ env.VENV_PATH }}/bin/activate
+          pip install -r requirements.txt
+      - run: pytest
