@@ -59,6 +59,7 @@ func main() {
 			{Name: "bitcoin-rpcport", Type: "string", Description: "Port to bitcoind RPC (optional).", Default: ""},
 			{Name: "bitcoin-rpcuser", Type: "string", Description: "Username to bitcoind RPC (optional).", Default: ""},
 			{Name: "bitcoin-rpcpassword", Type: "string", Description: "Password to bitcoind RPC (optional).", Default: ""},
+			{Name: "bitcoin-datadir", Type: "string", Description: "-datadir arg for bitcoin-cli. For compatibility with bcli, not actually used.", Default: ""},
 		},
 		RPCMethods: []plugin.RPCMethod{
 			{
@@ -131,7 +132,7 @@ func main() {
 				Description:     "Get the Bitcoin feerate in sat/kilo-vbyte.",
 				LongDescription: "",
 				Handler: func(p *plugin.Plugin, params plugin.Params) (resp any, errCode int, err error) {
-					estfees, err := getFeeRates()
+					estfees, err := getFeeRates(p.Network)
 					if err != nil {
 						p.Logf("estimatefees error: %s", err.Error())
 						estfees = &EstimatedFees{}

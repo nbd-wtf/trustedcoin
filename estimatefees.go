@@ -18,7 +18,19 @@ type FeeRate struct {
 	FeeRate int `json:"feerate"`
 }
 
-func getFeeRates() (*EstimatedFees, error) {
+func getFeeRates(network string) (*EstimatedFees, error) {
+	if network == "regtest" {
+		return &EstimatedFees{
+			FeeRateFloor: 1000,
+			FeeRates: []FeeRate{
+				{Blocks: 2, FeeRate: 1000},
+				{Blocks: 6, FeeRate: 1000},
+				{Blocks: 12, FeeRate: 1000},
+				{Blocks: 100, FeeRate: 1000},
+			},
+		}, nil
+	}
+
 	// try bitcoind first
 	if bitcoind != nil {
 		in2, err2 := bitcoind.EstimateSmartFee(2, &btcjson.EstimateModeConservative)
