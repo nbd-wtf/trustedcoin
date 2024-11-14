@@ -1,12 +1,8 @@
-# build updated requirements.txt with:
+# To run the integration tests you need to create a Python virtualenv and install pyln.testing:
 #   $ python -m venv venv
 #   $ source venv/bin/activate
 #   $ pip install pip-tools
-#   $ pip-compile --strip-extras requirements.in
-# load current requirements.txt in a virtualenv with:
-#   $ python -m venv venv
-#   $ source venv/bin/activate
-#   $ pip install -r requirements.txt
+#   $ pip-compile --strip-extras
+#   $ pip-sync
 
-pyln.client
-pyln.testing
+pyln.testing==24.8.2

@@ -3,9 +3,8 @@ name: continuous integration
 on: push
 
 env:
-  BITCOIN_CORE_VERSION: '27.2'
   CORE_LIGHTNING_VERSION: '24.08.2'
-  GO_VERSION: '1.22'
+  GO_VERSION: '1.23'
   PYTHON_VERSION: '3.13'
 
 jobs:
@@ -20,10 +19,19 @@ jobs:
       - run: go test -v
 
   integration-tests:
+    name: Integration tests on Bitcoin Core ${{ matrix.bitcoin-core-version }}
     runs-on: ubuntu-24.04
     env:
-      VENV_PATH: venv
+      BITCOIN_CORE_VERSION: ${{ matrix.bitcoin-core-version }}
       VALGRIND: 0
+    strategy:
+      fail-fast: false
+      matrix:
+        bitcoin-core-version:
+          - '25.2'
+          - '26.2'
+          - '27.2'
+          - '28.0'
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-go@v5
@@ -36,8 +44,10 @@ jobs:
       - run: .github/scripts/install-bitcoind.sh
       - run: .github/scripts/install-cln.sh
       - run: |
-          python -m venv ${{ env.VENV_PATH }}
-          echo "${{ env.VENV_PATH }}/bin" >> $GITHUB_PATH
-          source ${{ env.VENV_PATH }}/bin/activate
-          pip install -r requirements.txt
+          python -m venv venv
+          echo "venv/bin" >> $GITHUB_PATH
+          source venv/bin/activate
+          pip install pip-tools
+          pip-compile --strip-extras
+          pip-sync
       - run: pytest
