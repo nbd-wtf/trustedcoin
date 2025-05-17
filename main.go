@@ -188,6 +188,8 @@ func main() {
 					}
 				}
 
+				p.Logf("bitcoind RPC settings: {user: %s, password: %s, connect: %s, port: %s}", user, pass, hostname, port)
+
 				client, err := rpcclient.New(&rpcclient.ConnConfig{
 					Host:         hostname + ":" + port,
 					User:         user,
@@ -196,7 +198,7 @@ func main() {
 					DisableTLS:   true,
 				}, nil)
 				if err != nil {
-					p.Log("bitcoind RPC backend settings detected but invalid, will only use block explorers.")
+					p.Logf("bitcoind RPC backend settings detected but invalid (%s), will only use block explorers.", err)
 					return
 				}
 
@@ -204,7 +206,7 @@ func main() {
 				if _, err := bitcoind.GetBlockChainInfo(); err == nil {
 					p.Log("bitcoind RPC working, will use that with highest priority and fall back to block explorers if it fails.")
 				} else {
-					p.Log("bitcoind RPC backend settings detected, but failed to connect, will keep trying to use it though.")
+					p.Log("bitcoind RPC backend settings detected, but failed to connect (%s), will keep trying to use it though.", err)
 				}
 				return
 			}
