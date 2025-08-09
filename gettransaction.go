@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/hex"
 	"encoding/json"
+	"fmt"
 	"net/http"
 
 	"github.com/btcsuite/btcd/chaincfg/chainhash"
@@ -64,5 +65,5 @@ func getTransaction(txid string) (tx TxResponse, err error) {
 		return tx, nil
 	}
 
-	return
+	return TxResponse{}, fmt.Errorf("couldn't find the transaction anywhere")
 }
