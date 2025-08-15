@@ -164,6 +164,7 @@ func main() {
 						p.Logf("failed to get tx %s: %s", txid, err.Error())
 						return UTXOResponse{nil, nil}, 0, nil
 					}
+
 					output := tx.Vout[vout]
 					return UTXOResponse{&output.Value, &output.ScriptPubKey}, 0, nil
 				},

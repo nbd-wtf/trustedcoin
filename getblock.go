@@ -110,7 +110,7 @@ func getHash(height int64) (hash string, err error) {
 		}
 		defer w.Body.Close()
 
-		if w.StatusCode >= 404 {
+		if w.StatusCode >= 400 {
 			continue
 		}
 
