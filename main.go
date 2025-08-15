@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"math/rand"
+	"os"
 
 	"github.com/btcsuite/btcd/rpcclient"
 	"github.com/fiatjaf/lightningd-gjson-rpc/plugin"
@@ -163,6 +164,10 @@ func main() {
 					if err != nil {
 						p.Logf("failed to get tx %s: %s", txid, err.Error())
 						return UTXOResponse{nil, nil}, 0, nil
+					}
+
+					if len(tx.Vout) == 0 {
+						fmt.Fprintf(os.Stderr, "##### TX WITH NO VOUT: %s %v", txid, tx)
 					}
 					output := tx.Vout[vout]
 					return UTXOResponse{&output.Value, &output.ScriptPubKey}, 0, nil

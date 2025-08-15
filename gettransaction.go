@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"os"
 
 	"github.com/btcsuite/btcd/chaincfg/chainhash"
 )
@@ -49,9 +50,11 @@ func getTransaction(txid string) (tx TxResponse, err error) {
 
 	// then try explorers
 	for _, endpoint := range esploras(network) {
+		fmt.Fprintf(os.Stderr, "##### trying %s on %s", txid, endpoint)
 		w, errW := http.Get(endpoint + "/tx/" + txid)
 		if errW != nil {
 			err = errW
+			fmt.Fprintf(os.Stderr, ": %s, continuing\n", err)
 			continue
 		}
 		defer w.Body.Close()
@@ -59,9 +62,11 @@ func getTransaction(txid string) (tx TxResponse, err error) {
 		errW = json.NewDecoder(w.Body).Decode(&tx)
 		if errW != nil {
 			err = errW
+			fmt.Fprintf(os.Stderr, ": %s, continuing\n", err)
 			continue
 		}
 
+		fmt.Fprintf(os.Stderr, ", got it: %v", tx)
 		return tx, nil
 	}
 
