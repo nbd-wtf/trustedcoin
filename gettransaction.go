@@ -65,5 +65,5 @@ func getTransaction(txid string) (tx TxResponse, err error) {
 		return tx, nil
 	}
 
-	return TxResponse{}, fmt.Errorf("couldn't find the transaction anywhere")
+	return TxResponse{}, fmt.Errorf("couldn't find the transaction anywhere (last error: %w)", err)
 }
