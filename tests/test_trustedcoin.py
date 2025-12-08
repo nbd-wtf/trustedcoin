@@ -1,14 +1,20 @@
+import os
+import pytest
+
 from pyln.client import RpcError
 from pyln.testing.fixtures import *
 
-def test_bcli(node_factory, bitcoind, chainparams):
+
+def test_bcli(node_factory, chainparams):
     """
     Based on the test_bcli from Core Lightning
     """
-    node = node_factory.get_node(opts={
-        "disable-plugin": "bcli",
-        "plugin": os.path.join(os.getcwd(), 'trustedcoin'),
-    })
+    node = node_factory.get_node(
+        options={
+            "disable-plugin": "bcli",
+            "plugin": os.path.join(os.getcwd(), "trustedcoin"),
+        }
+    )
 
     # We cant stop it dynamically
     with pytest.raises(RpcError):
@@ -16,11 +22,11 @@ def test_bcli(node_factory, bitcoind, chainparams):
 
     # Failure case of feerate is tested in test_misc.py
     estimates = node.rpc.call("estimatefees")
-    assert 'feerate_floor' in estimates
-    assert [f['blocks'] for f in estimates['feerates']] == [2, 6, 12, 100]
+    assert "feerate_floor" in estimates
+    assert [f["blocks"] for f in estimates["feerates"]] == [2, 6, 12, 100]
 
     resp = node.rpc.call("getchaininfo", {"last_height": 0})
-    assert resp["chain"] == chainparams['name']
+    assert resp["chain"] == chainparams["name"]
     for field in ["headercount", "blockcount", "ibd"]:
         assert field in resp
 

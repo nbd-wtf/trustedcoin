@@ -8,7 +8,7 @@ import (
 	"github.com/fiatjaf/lightningd-gjson-rpc/plugin"
 )
 
-const version = "0.8.5"
+const version = "0.8.6"
 
 var (
 	network string
