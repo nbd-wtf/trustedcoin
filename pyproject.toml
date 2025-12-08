@@ -1,0 +1,16 @@
+[project]
+name = "trustedcoin"
+version = "0.1.0"
+description = "A plugin that uses block explorers as backends instead of your own Bitcoin node"
+readme = "README.md"
+requires-python = ">=3.9.2"
+
+[dependency-groups]
+dev = [
+    "pytest>=7.4,<9",
+    "pytest-xdist>=3.7,<4",
+    "pytest-timeout>=2.4,<3",
+    "pyln-testing>=24.11.1",
+    "pyln-client>=24.11.1",
+    "pyln-proto>=24.11.1",
+]
