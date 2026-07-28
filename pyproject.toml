@@ -3,7 +3,7 @@ name = "trustedcoin"
 version = "0.1.0"
 description = "A plugin that uses block explorers as backends instead of your own Bitcoin node"
 readme = "README.md"
-requires-python = ">=3.9.2"
+requires-python = ">=3.10"
 
 [dependency-groups]
 dev = [
