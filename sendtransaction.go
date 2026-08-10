@@ -5,6 +5,7 @@ import (
 	"encoding/hex"
 	"io"
 	"net/http"
+	"strings"
 
 	"github.com/btcsuite/btcd/wire"
 )
@@ -14,7 +15,7 @@ type RawTransactionResponse struct {
 	ErrMsg  string `json:"errmsg"`
 }
 
-func sendRawTransaction(txHex string) (resp RawTransactionResponse) {
+func sendRawTransaction(txHex string) RawTransactionResponse {
 	// try bitcoind first
 	if bitcoind != nil {
 		tx := &wire.MsgTx{}
@@ -29,24 +30,26 @@ func sendRawTransaction(txHex string) (resp RawTransactionResponse) {
 	}
 
 	// then try explorers
-	tx := bytes.NewBufferString(txHex)
+	var errs []string
 	for _, endpoint := range esploras(network) {
+		tx := bytes.NewBufferString(txHex)
+
 		w, err := http.Post(endpoint+"/tx", "text/plain", tx)
 		if err != nil {
-			resp = RawTransactionResponse{false, err.Error()}
+			errs = append(errs, endpoint+": "+err.Error())
 			continue
 		}
-		defer w.Body.Close()
 
 		if w.StatusCode >= 300 {
 			msg, _ := io.ReadAll(w.Body)
-			resp = RawTransactionResponse{false, string(msg)}
-			err = nil
+			w.Body.Close()
+			errs = append(errs, endpoint+": "+string(msg))
 			continue
 		}
+		w.Body.Close()
 
 		return RawTransactionResponse{true, ""}
 	}
 
-	return resp
+	return RawTransactionResponse{false, strings.Join(errs, "; ")}
 }
