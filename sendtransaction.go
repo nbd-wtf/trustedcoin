@@ -32,7 +32,6 @@ func sendRawTransaction(txHex string) RawTransactionResponse {
 	// then try explorers
 	var errs []string
 	for _, endpoint := range esploras(network) {
-		// rebuilt per attempt: http.Post drains the buffer, so reusing it sends later endpoints an empty body.
 		tx := bytes.NewBufferString(txHex)
 
 		w, err := http.Post(endpoint+"/tx", "text/plain", tx)
