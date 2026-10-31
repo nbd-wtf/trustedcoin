@@ -32,6 +32,11 @@ func TestInitAndShutdown(t *testing.T) {
 
 func TestGetchaininfoWithoutSourcesFails(t *testing.T) {
 	cmd, stdin, stdout, stderr := start(t, regtestInitRequest)
+	// Reap the plugin even when an assertion below fails.
+	t.Cleanup(func() {
+		_ = cmd.Process.Kill()
+		_ = cmd.Wait()
+	})
 
 	_, _ = io.WriteString(stdin, getchaininfoRequest)
 
@@ -43,7 +48,6 @@ func TestGetchaininfoWithoutSourcesFails(t *testing.T) {
 	select {
 	case response = <-responses:
 	case <-time.After(noSourceMaxDuration):
-		_ = cmd.Process.Kill()
 		t.Fatalf("getchaininfo did not answer within %s", noSourceMaxDuration)
 	}
 
