@@ -189,7 +189,7 @@ func main() {
 					}
 				}
 
-				p.Logf("bitcoind RPC settings: {user: %s, password: %s, connect: %s, port: %s}", user, pass, hostname, port)
+				p.Logf("bitcoind RPC settings: {user: %s, password: <redacted>, connect: %s, port: %s}", user, hostname, port)
 
 				client, err := rpcclient.New(&rpcclient.ConnConfig{
 					Host:         hostname + ":" + port,
