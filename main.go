@@ -3,6 +3,8 @@ package main
 import (
 	"fmt"
 	"math/rand"
+	"sync"
+	"time"
 
 	"github.com/btcsuite/btcd/rpcclient"
 	"github.com/fiatjaf/lightningd-gjson-rpc/plugin"
@@ -37,7 +39,53 @@ var (
 		"regtest": "18443",
 	}
 	bitcoind *rpcclient.Client
+
+	// closed as soon as OnInit has decided whether there is a bitcoind
+	// client, so handlers see the final value without waiting for the
+	// connectivity probe, which can hang on an unresponsive bitcoind
+	initDone = make(chan struct{})
+	initOnce sync.Once
 )
+
+func markInitDone() {
+	initOnce.Do(func() { close(initDone) })
+}
+
+const (
+	bitcoindRetryPeriod   = 30 * time.Second
+	bitcoindRetryInterval = time.Second
+)
+
+// afterInit makes a handler wait for OnInit, which the plugin library
+// runs in its own goroutine after it has already answered init.
+func afterInit(handler plugin.RPCHandler) plugin.RPCHandler {
+	return func(p *plugin.Plugin, params plugin.Params) (any, int, error) {
+		<-initDone
+		return handler(p, params)
+	}
+}
+
+// getTipWaitingForBitcoind gives a configured bitcoind a short while
+// to come up, since lightningd treats a getchaininfo failure as fatal.
+// A single bitcoind attempt can itself take a while, because the RPC
+// client retries a refused connection with a backoff, so the total can
+// run past the period by one attempt.
+func getTipWaitingForBitcoind(p *plugin.Plugin) (int64, error) {
+	deadline := time.Now().Add(bitcoindRetryPeriod)
+	tip, err := getTip()
+	if err == nil || bitcoind == nil {
+		return tip, err
+	}
+
+	p.Logf("getchaininfo: no block source answered (%s), retrying for up to %s", err, bitcoindRetryPeriod)
+	for time.Now().Before(deadline) {
+		time.Sleep(bitcoindRetryInterval)
+		if tip, err = getTip(); err == nil {
+			return tip, nil
+		}
+	}
+	return 0, err
+}
 
 func esploras(network string) (ss []string) {
 	ss = make([]string, len(esplora[network]))
@@ -67,7 +115,7 @@ func main() {
 				Usage:           "height",
 				Description:     "Get the bitcoin block at a given height",
 				LongDescription: "",
-				Handler: func(p *plugin.Plugin, params plugin.Params) (resp any, errCode int, err error) {
+				Handler: afterInit(func(p *plugin.Plugin, params plugin.Params) (resp any, errCode int, err error) {
 					height := params.Get("height").Int()
 
 					blockUnavailable := map[string]any{
@@ -91,14 +139,14 @@ func main() {
 						BlockHash string `json:"blockhash"`
 						Block     string `json:"block"`
 					}{hash, string(block)}, 0, nil
-				},
+				}),
 			}, {
 				Name:            "getchaininfo",
 				Usage:           "",
 				Description:     "Get the chain id, the header count, the block count and whether this is IBD.",
 				LongDescription: "",
-				Handler: func(p *plugin.Plugin, params plugin.Params) (resp any, errCode int, err error) {
-					tip, err := getTip()
+				Handler: afterInit(func(p *plugin.Plugin, params plugin.Params) (resp any, errCode int, err error) {
+					tip, err := getTipWaitingForBitcoind(p)
 					if err != nil {
 						return nil, 20, fmt.Errorf("failed to get tip: %s", err.Error())
 					}
@@ -125,13 +173,13 @@ func main() {
 						BlockCount  int64  `json:"blockcount"`
 						IBD         bool   `json:"ibd"`
 					}{bip70network, tip, tip, false}, 0, nil
-				},
+				}),
 			}, {
 				Name:            "estimatefees",
 				Usage:           "",
 				Description:     "Get the Bitcoin feerate in sat/kilo-vbyte.",
 				LongDescription: "",
-				Handler: func(p *plugin.Plugin, params plugin.Params) (resp any, errCode int, err error) {
+				Handler: afterInit(func(p *plugin.Plugin, params plugin.Params) (resp any, errCode int, err error) {
 					estfees, err := getFeeRates(p.Network)
 					if err != nil {
 						p.Logf("estimatefees error: %s", err.Error())
@@ -139,23 +187,23 @@ func main() {
 					}
 
 					return *estfees, 0, nil
-				},
+				}),
 			}, {
 				Name:            "sendrawtransaction",
 				Usage:           "tx",
 				Description:     "Send a raw transaction to the Bitcoin network.",
 				LongDescription: "",
-				Handler: func(p *plugin.Plugin, params plugin.Params) (resp any, errCode int, err error) {
+				Handler: afterInit(func(p *plugin.Plugin, params plugin.Params) (resp any, errCode int, err error) {
 					hex := params.Get("tx").String()
 
 					return sendRawTransaction(hex), 0, nil
-				},
+				}),
 			}, {
 				Name:            "getutxout",
 				Usage:           "txid vout",
 				Description:     "Get informations about an output, identified by a {txid} an a {vout}",
 				LongDescription: "",
-				Handler: func(p *plugin.Plugin, params plugin.Params) (resp any, errCode int, err error) {
+				Handler: afterInit(func(p *plugin.Plugin, params plugin.Params) (resp any, errCode int, err error) {
 					txid := params.Get("txid").String()
 					vout := params.Get("vout").Int()
 
@@ -167,10 +215,12 @@ func main() {
 
 					output := tx.Vout[vout]
 					return UTXOResponse{&output.Value, &output.ScriptPubKey}, 0, nil
-				},
+				}),
 			},
 		},
 		OnInit: func(p *plugin.Plugin) {
+			defer markInitDone()
+
 			network = p.Network
 
 			// we will try to use a local bitcoind
@@ -204,10 +254,11 @@ func main() {
 				}
 
 				bitcoind = client
+				markInitDone()
 				if _, err := bitcoind.GetBlockChainInfo(); err == nil {
 					p.Log("bitcoind RPC working, will use that with highest priority and fall back to block explorers if it fails.")
 				} else {
-					p.Log("bitcoind RPC backend settings detected, but failed to connect (%s), will keep trying to use it though.", err)
+					p.Logf("bitcoind RPC backend settings detected, but failed to connect (%s), will keep trying to use it though.", err)
 				}
 				return
 			}
